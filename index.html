@@ -1,0 +1,2669 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>My Work</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, "Noto Sans Thai", sans-serif;
+    background: #f7f7fc;
+    color: #29274c;
+    padding: 30px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo {
+    width: 75px;
+    height: 75px;
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8064ed,
+            #5735d3
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 38px;
+    color: white;
+
+    box-shadow:
+        0 10px 25px
+        rgba(90,60,210,.25);
+}
+
+.title h1 {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.title p {
+    color: #858397;
+    font-size: 16px;
+}
+
+.today {
+    background: white;
+    padding: 15px 22px;
+    border-radius: 16px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(40,30,80,.07);
+}
+
+.today-title {
+    color: #858397;
+    font-size: 14px;
+}
+
+.today-date {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.today-day {
+    color: #6949df;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+
+/* ================= SUMMARY ================= */
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 18px;
+    padding: 22px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(40,30,80,.06);
+}
+
+.summary-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: #eeeaff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+}
+
+.summary-text {
+    color: #77758a;
+    font-size: 14px;
+}
+
+.summary-number {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 4px;
+    color: #5538c4;
+}
+
+.green {
+    color: #16a45b;
+}
+
+.orange {
+    color: #e69a00;
+}
+
+.blue {
+    color: #3976d5;
+}
+
+
+/* ================= TASK SECTION ================= */
+
+.main-card {
+    background: white;
+    border-radius: 22px;
+
+    box-shadow:
+        0 5px 25px
+        rgba(40,30,80,.07);
+
+    overflow: hidden;
+
+    margin-bottom: 25px;
+}
+
+.main-header {
+    padding: 22px 28px;
+
+    border-bottom:
+        1px solid #eeeeF5;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.main-title {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+select {
+    padding: 11px 15px;
+
+    border:
+        1px solid #dedbea;
+
+    border-radius: 10px;
+
+    background: white;
+
+    font-size: 14px;
+
+    color: #444;
+
+    cursor: pointer;
+}
+
+.filter {
+    padding: 11px 15px;
+
+    border:
+        1px solid #dedbea;
+
+    background: white;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.filter.active {
+    background: #eeeaff;
+    color: #6845df;
+    border-color: #eeeaff;
+}
+
+.add-btn {
+    border: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8064ed,
+            #5735d3
+        );
+
+    color: white;
+
+    padding: 11px 20px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 15px
+        rgba(100,70,220,.18);
+}
+
+
+/* ================= TASK LIST ================= */
+
+#taskList {
+    padding: 25px 28px;
+}
+
+.task-card {
+    background: #faf9ff;
+
+    border:
+        1px solid #eeeaf9;
+
+    border-radius: 16px;
+
+    padding: 18px;
+
+    margin-bottom: 12px;
+
+    transition: .2s;
+}
+
+.task-card:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 15px
+        rgba(60,40,120,.06);
+}
+
+.task-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.task-name {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.task-detail {
+    color: #77758a;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+.task-deadline {
+    color: #6845df;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.status-btn {
+    border: none;
+
+    border-radius: 9px;
+
+    padding: 8px 12px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fff3d6;
+    color: #c58400;
+}
+
+.status-done {
+    background: #ddf7e9;
+    color: #159351;
+}
+
+.task-actions {
+    margin-top: 15px;
+}
+
+.delete-btn {
+    border: none;
+
+    background: #ffe8e8;
+
+    color: #d44b4b;
+
+    padding: 8px 12px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+
+/* ================= EMPTY ================= */
+
+.empty {
+    height: 350px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+.empty-icon {
+    width: 110px;
+    height: 110px;
+
+    border-radius: 50%;
+
+    background: #f0ebff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 55px;
+
+    margin-bottom: 20px;
+}
+
+.empty h2 {
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.empty p {
+    color: #888699;
+    margin-bottom: 18px;
+}
+
+
+/* ================= YEAR / MONTH SUMMARY ================= */
+
+.month-summary {
+
+    background: white;
+
+    border-radius: 22px;
+
+    padding: 25px 28px;
+
+    box-shadow:
+        0 5px 25px
+        rgba(40,30,80,.07);
+}
+
+.month-summary-header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.month-summary-title {
+
+    font-size: 21px;
+
+    font-weight: bold;
+}
+
+.year-selector {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #77758a;
+}
+
+.year-selector select {
+
+    font-weight: bold;
+
+    color: #6845df;
+}
+
+
+/* ================= MONTH GRID ================= */
+
+.month-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap: 15px;
+}
+
+.month-card {
+
+    border:
+        1px solid #eeeaf9;
+
+    background: #faf9ff;
+
+    border-radius: 16px;
+
+    padding: 18px;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.month-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 6px 18px
+        rgba(60,40,120,.08);
+}
+
+.month-card.current {
+
+    border-color: #8064ed;
+
+    background: #f5f1ff;
+}
+
+.month-name {
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+}
+
+.month-number {
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    color: #5538c4;
+}
+
+.month-label {
+
+    color: #888699;
+
+    font-size: 13px;
+
+    margin-bottom: 12px;
+}
+
+.month-status {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    font-size: 13px;
+}
+
+.month-done {
+    color: #159351;
+}
+
+.month-pending {
+    color: #c58400;
+}
+
+
+/* ================= MODAL ================= */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(30,25,60,.45);
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 1000;
+}
+
+.modal-box {
+
+    background: white;
+
+    width: 100%;
+
+    max-width: 500px;
+
+    border-radius: 22px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.2);
+}
+
+.modal-header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+
+    font-size: 23px;
+}
+
+.close-btn {
+
+    background: #f1f1f6;
+
+    border: none;
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 50%;
+
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+.modal-box label {
+
+    display: block;
+
+    margin:
+        14px 0 7px;
+
+    font-weight: bold;
+
+    font-size: 14px;
+}
+
+.modal-box input,
+.modal-box textarea {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border:
+        1px solid #ddd9eb;
+
+    border-radius: 11px;
+
+    font-size: 15px;
+
+    font-family: inherit;
+
+    outline: none;
+}
+
+.modal-box textarea {
+
+    height: 90px;
+
+    resize: vertical;
+}
+
+.date-help {
+
+    color: #888699;
+
+    font-size: 12px;
+
+    margin-top: 6px;
+}
+
+.modal-buttons {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+.cancel-btn,
+.save-btn {
+
+    flex: 1;
+
+    padding: 13px;
+
+    border-radius: 11px;
+
+    border: none;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.cancel-btn {
+
+    background: #f0f0f5;
+}
+
+.save-btn {
+
+    background:
+        linear-gradient(
+            135deg,
+            #8064ed,
+            #5735d3
+        );
+
+    color: white;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 900px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .title h1 {
+        font-size: 30px;
+    }
+
+    .title p {
+        font-size: 14px;
+    }
+
+    .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
+    }
+
+    .today {
+        display: none;
+    }
+
+    .summary {
+        grid-template-columns:
+            repeat(2,1fr);
+
+        gap: 10px;
+    }
+
+    .summary-card {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .summary-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .summary-number {
+        font-size: 23px;
+    }
+
+    .main-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px;
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
+    .controls select,
+    .controls .add-btn {
+        grid-column:
+            span 3;
+
+        width: 100%;
+    }
+
+    .filter {
+        width: 100%;
+    }
+
+    .month-summary {
+        padding: 20px 18px;
+    }
+
+    .month-summary-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .year-selector {
+        justify-content: space-between;
+    }
+
+    .month-grid {
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .summary-text {
+        font-size: 12px;
+    }
+
+    .summary-number {
+        font-size: 20px;
+    }
+
+    .task-top {
+        flex-direction: column;
+    }
+
+    .status-btn {
+        width: fit-content;
+    }
+
+    .month-grid {
+        grid-template-columns:
+            repeat(2,1fr);
+
+        gap: 10px;
+    }
+
+    .month-card {
+        padding: 14px;
+    }
+
+    .month-number {
+        font-size: 25px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<!-- ================= HEADER ================= -->
+
+<div class="header">
+
+    <div class="logo-area">
+
+        <div class="logo">
+            📋
+        </div>
+
+        <div class="title">
+
+            <h1>
+                My Work
+            </h1>
+
+            <p>
+                ระบบติดตามงานส่วนตัว
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="today">
+
+        <div class="today-title">
+            วันนี้
+        </div>
+
+        <div
+            class="today-date"
+            id="todayDate">
+        </div>
+
+        <div
+            class="today-day"
+            id="todayDay">
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= SUMMARY ================= -->
+
+<div class="summary">
+
+
+    <div class="summary-card">
+
+        <div class="summary-icon">
+            ☷
+        </div>
+
+        <div>
+
+            <div class="summary-text">
+                งานทั้งหมด
+            </div>
+
+            <div
+                class="summary-number"
+                id="totalCount">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <div class="summary-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <div class="summary-text">
+                เสร็จแล้ว
+            </div>
+
+            <div
+                class="summary-number green"
+                id="doneCount">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <div class="summary-icon">
+            ◷
+        </div>
+
+        <div>
+
+            <div class="summary-text">
+                ยังไม่เสร็จ
+            </div>
+
+            <div
+                class="summary-number orange"
+                id="pendingCount">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <div class="summary-icon">
+            📅
+        </div>
+
+        <div>
+
+            <div class="summary-text">
+                ปีที่เลือก
+            </div>
+
+            <div
+                class="summary-number blue"
+                id="selectedYearCount">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ================= TASK ================= -->
+
+<div class="main-card">
+
+
+    <div class="main-header">
+
+
+        <div class="main-title">
+            📅 งานของฉัน
+        </div>
+
+
+        <div class="controls">
+
+
+            <select id="yearSelect">
+            </select>
+
+
+            <select id="monthSelect">
+
+                <option value="0">
+                    มกราคม
+                </option>
+
+                <option value="1">
+                    กุมภาพันธ์
+                </option>
+
+                <option value="2">
+                    มีนาคม
+                </option>
+
+                <option value="3">
+                    เมษายน
+                </option>
+
+                <option value="4">
+                    พฤษภาคม
+                </option>
+
+                <option value="5">
+                    มิถุนายน
+                </option>
+
+                <option value="6">
+                    กรกฎาคม
+                </option>
+
+                <option value="7">
+                    สิงหาคม
+                </option>
+
+                <option value="8">
+                    กันยายน
+                </option>
+
+                <option value="9">
+                    ตุลาคม
+                </option>
+
+                <option value="10">
+                    พฤศจิกายน
+                </option>
+
+                <option value="11">
+                    ธันวาคม
+                </option>
+
+            </select>
+
+
+            <button
+                class="filter active"
+                data-filter="all">
+
+                ทั้งหมด
+
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="pending">
+
+                ยังไม่เสร็จ
+
+            </button>
+
+
+            <button
+                class="filter"
+                data-filter="done">
+
+                เสร็จแล้ว
+
+            </button>
+
+
+            <button
+                class="add-btn"
+                onclick="openModal()">
+
+                ＋ เพิ่มงาน
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div id="taskList"></div>
+
+
+
+    <div
+        class="empty"
+        id="emptyState">
+
+
+        <div class="empty-icon">
+            📋
+        </div>
+
+
+        <h2>
+            ยังไม่มีงานในเดือนนี้
+        </h2>
+
+
+        <p>
+            เริ่มต้นด้วยการเพิ่มงานแรกของคุณ
+        </p>
+
+
+        <button
+            class="add-btn"
+            onclick="openModal()">
+
+            ＋ เพิ่มงาน
+
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ================= YEAR SUMMARY ================= -->
+
+<div class="month-summary">
+
+
+    <div class="month-summary-header">
+
+
+        <div class="month-summary-title">
+
+            📊 สรุปงานรายเดือน
+
+        </div>
+
+
+        <div class="year-selector">
+
+            <span>
+                ปี
+            </span>
+
+
+            <select
+                id="summaryYearSelect">
+            </select>
+
+        </div>
+
+
+    </div>
+
+
+
+    <div
+        class="month-grid"
+        id="monthGrid">
+
+    </div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+<!-- ================= MODAL ================= -->
+
+<div
+    id="taskModal"
+    class="modal">
+
+
+    <div class="modal-box">
+
+
+        <div class="modal-header">
+
+            <h2>
+                ➕ เพิ่มงาน
+            </h2>
+
+
+            <button
+                class="close-btn"
+                onclick="closeModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+
+        <label>
+            ชื่องาน
+        </label>
+
+
+        <input
+            type="text"
+            id="taskName"
+            placeholder="เช่น ตรวจสอบ Printer">
+
+
+
+        <label>
+            รายละเอียด
+        </label>
+
+
+        <textarea
+            id="taskDetail"
+            placeholder="รายละเอียดงาน (ถ้ามี)"
+        ></textarea>
+
+
+
+        <label>
+            กำหนดส่ง
+        </label>
+
+
+        <input
+            type="text"
+            id="taskDeadline"
+            placeholder="05/09/2026 17:00"
+            maxlength="16"
+            inputmode="numeric">
+
+
+        <div class="date-help">
+
+            รูปแบบ:
+            วัน/เดือน/ปี เวลา
+
+            เช่น
+            05/09/2026 17:00
+
+        </div>
+
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                class="cancel-btn"
+                onclick="closeModal()">
+
+                ยกเลิก
+
+            </button>
+
+
+            <button
+                class="save-btn"
+                onclick="saveTask()">
+
+                บันทึกงาน
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* ================= DATA ================= */
+
+let tasks =
+    JSON.parse(
+        localStorage.getItem("myTasks")
+    ) || [];
+
+
+let currentFilter = "all";
+
+
+const thaiMonths = [
+
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม"
+
+];
+
+
+
+/* ================= YEAR ================= */
+
+const currentYear =
+    new Date().getFullYear();
+
+
+const yearSelect =
+    document.getElementById(
+        "yearSelect"
+    );
+
+
+const summaryYearSelect =
+    document.getElementById(
+        "summaryYearSelect"
+    );
+
+
+/*
+
+สร้างปีตั้งแต่
+2020 ถึง 2035
+
+สามารถใช้ได้หลายปี
+
+*/
+
+for (
+    let year = currentYear - 5;
+    year <= currentYear + 10;
+    year++
+) {
+
+
+    const option =
+        document.createElement(
+            "option"
+        );
+
+
+    option.value =
+        year;
+
+
+    option.textContent =
+        year;
+
+
+    yearSelect.appendChild(
+        option
+    );
+
+
+    const option2 =
+        document.createElement(
+            "option"
+        );
+
+
+    option2.value =
+        year;
+
+
+    option2.textContent =
+        year;
+
+
+    summaryYearSelect.appendChild(
+        option2
+    );
+
+}
+
+
+/* ตั้งปีปัจจุบัน */
+
+yearSelect.value =
+    currentYear;
+
+
+summaryYearSelect.value =
+    currentYear;
+
+
+
+/* ================= TODAY ================= */
+
+function showToday() {
+
+
+    const now =
+        new Date();
+
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2,"0");
+
+
+    const month =
+        String(
+            now.getMonth()+1
+        ).padStart(2,"0");
+
+
+    const year =
+        now.getFullYear();
+
+
+    const days = [
+
+        "วันอาทิตย์",
+        "วันจันทร์",
+        "วันอังคาร",
+        "วันพุธ",
+        "วันพฤหัสบดี",
+        "วันศุกร์",
+        "วันเสาร์"
+
+    ];
+
+
+    document.getElementById(
+        "todayDate"
+    ).textContent =
+
+        `${day}/${month}/${year}`;
+
+
+    document.getElementById(
+        "todayDay"
+    ).textContent =
+
+        days[now.getDay()];
+
+}
+
+
+
+/* ================= MODAL ================= */
+
+function openModal() {
+
+    document.getElementById(
+        "taskModal"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "taskName"
+    ).focus();
+
+}
+
+
+function closeModal() {
+
+    document.getElementById(
+        "taskModal"
+    ).style.display =
+        "none";
+
+}
+
+
+
+/* ================= DATE ================= */
+
+function isValidDeadline(value) {
+
+
+    const pattern =
+        /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/;
+
+
+    const match =
+        value.match(pattern);
+
+
+    if (!match) {
+
+        return false;
+
+    }
+
+
+    const day =
+        Number(match[1]);
+
+
+    const month =
+        Number(match[2]);
+
+
+    const year =
+        Number(match[3]);
+
+
+    const hour =
+        Number(match[4]);
+
+
+    const minute =
+        Number(match[5]);
+
+
+    if (
+        month < 1 ||
+        month > 12
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        day < 1 ||
+        day > 31
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        hour < 0 ||
+        hour > 23
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        minute < 0 ||
+        minute > 59
+    ) {
+
+        return false;
+
+    }
+
+
+    const date =
+        new Date(
+            year,
+            month - 1,
+            day,
+            hour,
+            minute
+        );
+
+
+    return (
+
+        date.getFullYear()
+            === year &&
+
+        date.getMonth()
+            === month - 1 &&
+
+        date.getDate()
+            === day &&
+
+        date.getHours()
+            === hour &&
+
+        date.getMinutes()
+            === minute
+
+    );
+
+}
+
+
+
+/* ================= PARSE DATE ================= */
+
+function parseThaiDate(value) {
+
+
+    if (!value) {
+
+        return null;
+
+    }
+
+
+    const parts =
+        value.split(" ");
+
+
+    const date =
+        parts[0].split("/");
+
+
+    const time =
+        (
+            parts[1] || "00:00"
+        ).split(":");
+
+
+    if (
+        date.length !== 3 ||
+        time.length !== 2
+    ) {
+
+        return null;
+
+    }
+
+
+    return new Date(
+
+        Number(date[2]),
+
+        Number(date[1]) - 1,
+
+        Number(date[0]),
+
+        Number(time[0]),
+
+        Number(time[1])
+
+    );
+
+}
+
+
+
+/* ================= SAVE TASK ================= */
+
+function saveTask() {
+
+
+    const name =
+        document.getElementById(
+            "taskName"
+        ).value.trim();
+
+
+    const detail =
+        document.getElementById(
+            "taskDetail"
+        ).value.trim();
+
+
+    const deadline =
+        document.getElementById(
+            "taskDeadline"
+        ).value.trim();
+
+
+
+    if (name === "") {
+
+        alert(
+            "กรุณาใส่ชื่องาน"
+        );
+
+        return;
+
+    }
+
+
+
+    if (
+        deadline !== "" &&
+        !isValidDeadline(deadline)
+    ) {
+
+        alert(
+
+            "รูปแบบวันที่ไม่ถูกต้อง\n\n" +
+
+            "กรุณาใช้รูปแบบ\n" +
+
+            "05/09/2026 17:00"
+
+        );
+
+        return;
+
+    }
+
+
+
+    const task = {
+
+        id:
+            Date.now(),
+
+        name:
+            name,
+
+        detail:
+            detail,
+
+        deadline:
+            deadline,
+
+        status:
+            "pending",
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    tasks.push(task);
+
+
+    saveData();
+
+
+    document.getElementById(
+        "taskName"
+    ).value = "";
+
+
+    document.getElementById(
+        "taskDetail"
+    ).value = "";
+
+
+    document.getElementById(
+        "taskDeadline"
+    ).value = "";
+
+
+    closeModal();
+
+
+    renderTasks();
+
+    renderMonthSummary();
+
+}
+
+
+
+/* ================= STORAGE ================= */
+
+function saveData() {
+
+    localStorage.setItem(
+
+        "myTasks",
+
+        JSON.stringify(tasks)
+
+    );
+
+}
+
+
+
+/* ================= GET TASK DATE ================= */
+
+function getTaskDate(task) {
+
+
+    if (task.deadline) {
+
+        return parseThaiDate(
+            task.deadline
+        );
+
+    }
+
+
+    return new Date(
+        task.createdAt
+    );
+
+}
+
+
+
+/* ================= RENDER TASKS ================= */
+
+function renderTasks() {
+
+
+    const selectedYear =
+        Number(
+            yearSelect.value
+        );
+
+
+    const selectedMonth =
+        Number(
+            document.getElementById(
+                "monthSelect"
+            ).value
+        );
+
+
+    let filteredTasks =
+        tasks.filter(task => {
+
+
+            const date =
+                getTaskDate(task);
+
+
+            if (!date) {
+
+                return false;
+
+            }
+
+
+            return (
+
+                date.getFullYear()
+                    === selectedYear &&
+
+                date.getMonth()
+                    === selectedMonth
+
+            );
+
+        });
+
+
+
+    if (
+        currentFilter !== "all"
+    ) {
+
+        filteredTasks =
+            filteredTasks.filter(
+
+                task =>
+                    task.status
+                    === currentFilter
+
+            );
+
+    }
+
+
+
+    const taskList =
+        document.getElementById(
+            "taskList"
+        );
+
+
+    const emptyState =
+        document.getElementById(
+            "emptyState"
+        );
+
+
+    taskList.innerHTML = "";
+
+
+
+    if (
+        filteredTasks.length === 0
+    ) {
+
+
+        taskList.style.display =
+            "none";
+
+
+        emptyState.style.display =
+            "flex";
+
+
+    }
+
+    else {
+
+
+        taskList.style.display =
+            "block";
+
+
+        emptyState.style.display =
+            "none";
+
+
+
+        filteredTasks.forEach(
+            task => {
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "task-card";
+
+
+                const icon =
+
+                    task.status === "done"
+
+                    ? "✅"
+
+                    : "🟡";
+
+
+                const statusText =
+
+                    task.status === "done"
+
+                    ? "✓ เสร็จแล้ว"
+
+                    : "◷ ยังไม่เสร็จ";
+
+
+                const statusClass =
+
+                    task.status === "done"
+
+                    ? "status-done"
+
+                    : "status-pending";
+
+
+
+                card.innerHTML = `
+
+                    <div class="task-top">
+
+                        <div>
+
+                            <div class="task-name">
+
+                                ${icon}
+
+                                ${escapeHtml(
+                                    task.name
+                                )}
+
+                            </div>
+
+
+                            <div class="task-detail">
+
+                                ${
+                                    task.detail
+                                    ? escapeHtml(
+                                        task.detail
+                                    )
+                                    : "ไม่มีรายละเอียด"
+                                }
+
+                            </div>
+
+
+                            <div class="task-deadline">
+
+                                📅 กำหนดส่ง:
+
+                                ${
+                                    task.deadline
+                                    || "ไม่ได้กำหนด"
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+
+                            class="
+                                status-btn
+                                ${statusClass}
+                            "
+
+                            onclick="
+                                toggleStatus(
+                                    ${task.id}
+                                )
+                            ">
+
+                            ${statusText}
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="task-actions">
+
+                        <button
+
+                            class="delete-btn"
+
+                            onclick="
+                                deleteTask(
+                                    ${task.id}
+                                )
+                            ">
+
+                            🗑 ลบงาน
+
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                taskList.appendChild(
+                    card
+                );
+
+            }
+
+        );
+
+    }
+
+
+    updateSummary();
+
+}
+
+
+
+/* ================= SUMMARY ================= */
+
+function updateSummary() {
+
+
+    const selectedYear =
+        Number(
+            yearSelect.value
+        );
+
+
+    const yearTasks =
+        tasks.filter(task => {
+
+
+            const date =
+                getTaskDate(task);
+
+
+            return (
+
+                date &&
+                date.getFullYear()
+                    === selectedYear
+
+            );
+
+        });
+
+
+    const done =
+        yearTasks.filter(
+
+            task =>
+                task.status === "done"
+
+        ).length;
+
+
+    const pending =
+        yearTasks.filter(
+
+            task =>
+                task.status === "pending"
+
+        ).length;
+
+
+
+    document.getElementById(
+        "totalCount"
+    ).textContent =
+
+        tasks.length;
+
+
+    document.getElementById(
+        "doneCount"
+    ).textContent =
+
+        done;
+
+
+    document.getElementById(
+        "pendingCount"
+    ).textContent =
+
+        pending;
+
+
+    document.getElementById(
+        "selectedYearCount"
+    ).textContent =
+
+        yearTasks.length;
+
+}
+
+
+
+/* ================= MONTH SUMMARY ================= */
+
+function renderMonthSummary() {
+
+
+    const year =
+        Number(
+            summaryYearSelect.value
+        );
+
+
+    const grid =
+        document.getElementById(
+            "monthGrid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+
+    const selectedMainYear =
+        Number(
+            yearSelect.value
+        );
+
+
+    const selectedMainMonth =
+        Number(
+            document.getElementById(
+                "monthSelect"
+            ).value
+        );
+
+
+
+    for (
+        let month = 0;
+        month < 12;
+        month++
+    ) {
+
+
+        const monthTasks =
+            tasks.filter(task => {
+
+
+                const date =
+                    getTaskDate(task);
+
+
+                if (!date) {
+
+                    return false;
+
+                }
+
+
+                return (
+
+                    date.getFullYear()
+                        === year &&
+
+                    date.getMonth()
+                        === month
+
+                );
+
+            });
+
+
+
+        const done =
+            monthTasks.filter(
+
+                task =>
+                    task.status === "done"
+
+            ).length;
+
+
+        const pending =
+            monthTasks.filter(
+
+                task =>
+                    task.status === "pending"
+
+            ).length;
+
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "month-card";
+
+
+
+        if (
+
+            year === selectedMainYear &&
+
+            month === selectedMainMonth
+
+        ) {
+
+            card.classList.add(
+                "current"
+            );
+
+        }
+
+
+
+        card.innerHTML = `
+
+            <div class="month-name">
+
+                ${thaiMonths[month]}
+
+            </div>
+
+
+            <div class="month-number">
+
+                ${monthTasks.length}
+
+            </div>
+
+
+            <div class="month-label">
+
+                งานทั้งหมด
+
+            </div>
+
+
+            <div class="month-status">
+
+                <span class="month-done">
+
+                    ✓ ${done} เสร็จ
+
+                </span>
+
+
+                <span class="month-pending">
+
+                    ◷ ${pending} ยัง
+
+                </span>
+
+            </div>
+
+        `;
+
+
+
+        card.addEventListener(
+            "click",
+            function() {
+
+
+                yearSelect.value =
+                    year;
+
+
+                document.getElementById(
+                    "monthSelect"
+                ).value =
+                    month;
+
+
+                currentFilter =
+                    "all";
+
+
+                document
+                    .querySelectorAll(
+                        ".filter"
+                    )
+                    .forEach(
+                        btn =>
+                            btn.classList.remove(
+                                "active"
+                            )
+                    );
+
+
+                document
+                    .querySelector(
+                        '[data-filter="all"]'
+                    )
+                    .classList.add(
+                        "active"
+                    );
+
+
+                renderTasks();
+
+
+                renderMonthSummary();
+
+
+                window.scrollTo({
+
+                    top: 0,
+
+                    behavior:
+                        "smooth"
+
+                });
+
+            }
+        );
+
+
+        grid.appendChild(
+            card
+        );
+
+    }
+
+}
+
+
+
+/* ================= STATUS ================= */
+
+function toggleStatus(id) {
+
+
+    const task =
+        tasks.find(
+            task =>
+                task.id === id
+        );
+
+
+    if (!task) {
+
+        return;
+
+    }
+
+
+    task.status =
+
+        task.status === "done"
+
+        ? "pending"
+
+        : "done";
+
+
+    saveData();
+
+
+    renderTasks();
+
+
+    renderMonthSummary();
+
+}
+
+
+
+/* ================= DELETE ================= */
+
+function deleteTask(id) {
+
+
+    if (
+        !confirm(
+            "ต้องการลบงานนี้หรือไม่?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    tasks =
+        tasks.filter(
+            task =>
+                task.id !== id
+        );
+
+
+    saveData();
+
+
+    renderTasks();
+
+
+    renderMonthSummary();
+
+}
+
+
+
+/* ================= ESCAPE ================= */
+
+function escapeHtml(text) {
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+
+/* ================= YEAR CHANGE ================= */
+
+yearSelect.addEventListener(
+    "change",
+    function() {
+
+
+        renderTasks();
+
+        renderMonthSummary();
+
+    }
+);
+
+
+
+summaryYearSelect.addEventListener(
+    "change",
+    function() {
+
+
+        renderMonthSummary();
+
+    }
+);
+
+
+
+/* ================= MONTH CHANGE ================= */
+
+document.getElementById(
+    "monthSelect"
+).addEventListener(
+    "change",
+    function() {
+
+
+        currentFilter =
+            "all";
+
+
+        document
+            .querySelectorAll(
+                ".filter"
+            )
+            .forEach(
+                btn =>
+                    btn.classList.remove(
+                        "active"
+                    )
+            );
+
+
+        document
+            .querySelector(
+                '[data-filter="all"]'
+            )
+            .classList.add(
+                "active"
+            );
+
+
+        renderTasks();
+
+
+        renderMonthSummary();
+
+    }
+);
+
+
+
+/* ================= FILTER ================= */
+
+document
+    .querySelectorAll(
+        ".filter"
+    )
+    .forEach(
+
+        button => {
+
+
+            button.addEventListener(
+
+                "click",
+
+                function() {
+
+
+                    currentFilter =
+                        this.dataset.filter;
+
+
+                    document
+                        .querySelectorAll(
+                            ".filter"
+                        )
+                        .forEach(
+                            btn =>
+                                btn.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    this.classList.add(
+                        "active"
+                    );
+
+
+                    renderTasks();
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+
+/* ================= CLOSE MODAL ================= */
+
+document
+    .getElementById(
+        "taskModal"
+    )
+    .addEventListener(
+
+        "click",
+
+        function(event) {
+
+
+            if (
+                event.target === this
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+
+    );
+
+
+
+/* ================= START ================= */
+
+showToday();
+
+
+document.getElementById(
+    "monthSelect"
+).value =
+    new Date().getMonth();
+
+
+renderTasks();
+
+
+renderMonthSummary();
+
+</script>
+
+</body>
+
+</html>
