@@ -1799,18 +1799,27 @@ function saveTask() {
 
 
 
-/* ================= STORAGE ================= */
+async function saveData() {
 
-function saveData() {
-
+    // เก็บไว้ในเครื่องด้วย เผื่อเป็นข้อมูลสำรอง
     localStorage.setItem(
-
         "myTasks",
-
         JSON.stringify(tasks)
-
     );
 
+    // บันทึกลง Firebase Firestore
+    try {
+        await db.collection("tasks").doc("myTasks").set({
+            tasks: tasks,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        console.log("บันทึกข้อมูลลง Firebase แล้ว");
+
+    } catch (error) {
+        console.error("บันทึก Firebase ไม่สำเร็จ:", error);
+        alert("ไม่สามารถบันทึกข้อมูลลง Firebase ได้");
+    }
 }
 
 
