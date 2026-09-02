@@ -1342,21 +1342,15 @@ select {
 
 
 <script>
-
 /* ================= DATA ================= */
 
-// ใช้ข้อมูลในเครื่องเป็นข้อมูลสำรองระหว่างรอ Firebase
-let tasks =
-    JSON.parse(
-        localStorage.getItem("myTasks")
-    ) || [];
-
+let tasks = JSON.parse(localStorage.getItem("myTasks") || "[]");
 let currentFilter = "all";
 let firebaseReady = false;
-
+let currentUser = null;
+let isSaving = false;
 
 const thaiMonths = [
-
     "มกราคม",
     "กุมภาพันธ์",
     "มีนาคม",
@@ -1369,123 +1363,121 @@ const thaiMonths = [
     "ตุลาคม",
     "พฤศจิกายน",
     "ธันวาคม"
-
 ];
 
+/* ================= FIREBASE USER DATA =================
+   ข้อมูลของแต่ละคนจะอยู่ที่:
+   tasks/{Firebase Anonymous UID}
 
+   ทำให้ผู้ใช้แต่ละคนไม่ใช้เอกสารเดียวกัน
+========================================================= */
+
+function getUserTaskRef() {
+    if (!currentUser) {
+        throw new Error("ยังไม่ได้เข้าสู่ระบบ Firebase");
+    }
+
+    return db.collection("tasks").doc(currentUser.uid);
+}
+
+/* ================= LOCAL STORAGE ================= */
+
+function saveLocalData() {
+    localStorage.setItem("myTasks", JSON.stringify(tasks));
+}
+
+/* ================= CONNECTION STATUS ================= */
+
+function createConnectionStatus() {
+    if (document.getElementById("connectionStatus")) return;
+
+    const el = document.createElement("div");
+    el.id = "connectionStatus";
+
+    Object.assign(el.style, {
+        position: "fixed",
+        right: "15px",
+        bottom: "15px",
+        zIndex: "9999",
+        background: "#ffffff",
+        color: "#77758a",
+        padding: "9px 14px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 15px rgba(0,0,0,.08)",
+        fontSize: "12px",
+        transition: "all .2s"
+    });
+
+    el.textContent = "กำลังเชื่อมต่อ Firebase...";
+    document.body.appendChild(el);
+}
+
+function setConnectionStatus(message, type = "normal") {
+    const el = document.getElementById("connectionStatus");
+    if (!el) return;
+
+    el.textContent = message;
+
+    if (type === "success") {
+        el.style.color = "#159351";
+    } else if (type === "error") {
+        el.style.color = "#d44b4b";
+    } else {
+        el.style.color = "#77758a";
+    }
+}
 
 /* ================= YEAR ================= */
 
-const currentYear =
-    new Date().getFullYear();
-
+const currentYear = new Date().getFullYear();
 
 const yearSelect =
-    document.getElementById(
-        "yearSelect"
-    );
-
+    document.getElementById("yearSelect");
 
 const summaryYearSelect =
-    document.getElementById(
-        "summaryYearSelect"
-    );
+    document.getElementById("summaryYearSelect");
 
-
-/*
-
-สร้างปีตั้งแต่
-2020 ถึง 2035
-
-สามารถใช้ได้หลายปี
-
-*/
+const monthSelect =
+    document.getElementById("monthSelect");
 
 for (
     let year = currentYear - 5;
     year <= currentYear + 10;
     year++
 ) {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
 
-
-    const option =
-        document.createElement(
-            "option"
-        );
-
-
-    option.value =
-        year;
-
-
-    option.textContent =
-        year;
-
-
-    yearSelect.appendChild(
-        option
-    );
-
-
-    const option2 =
-        document.createElement(
-            "option"
-        );
-
-
-    option2.value =
-        year;
-
-
-    option2.textContent =
-        year;
-
-
-    summaryYearSelect.appendChild(
-        option2
-    );
-
+    const option2 = document.createElement("option");
+    option2.value = year;
+    option2.textContent = year;
+    summaryYearSelect.appendChild(option2);
 }
 
+yearSelect.value = currentYear;
+summaryYearSelect.value = currentYear;
 
-/* ตั้งปีปัจจุบัน */
+/* ================= MONTH ================= */
 
-yearSelect.value =
-    currentYear;
-
-
-summaryYearSelect.value =
-    currentYear;
-
-
+monthSelect.value = new Date().getMonth();
 
 /* ================= TODAY ================= */
 
 function showToday() {
-
-
-    const now =
-        new Date();
-
+    const now = new Date();
 
     const day =
-        String(
-            now.getDate()
-        ).padStart(2,"0");
-
+        String(now.getDate()).padStart(2, "0");
 
     const month =
-        String(
-            now.getMonth()+1
-        ).padStart(2,"0");
-
+        String(now.getMonth() + 1).padStart(2, "0");
 
     const year =
         now.getFullYear();
 
-
     const days = [
-
         "วันอาทิตย์",
         "วันจันทร์",
         "วันอังคาร",
@@ -1493,134 +1485,49 @@ function showToday() {
         "วันพฤหัสบดี",
         "วันศุกร์",
         "วันเสาร์"
-
     ];
 
-
-    document.getElementById(
-        "todayDate"
-    ).textContent =
-
+    document.getElementById("todayDate").textContent =
         `${day}/${month}/${year}`;
 
-
-    document.getElementById(
-        "todayDay"
-    ).textContent =
-
+    document.getElementById("todayDay").textContent =
         days[now.getDay()];
-
 }
-
-
 
 /* ================= MODAL ================= */
 
 function openModal() {
+    document.getElementById("taskModal").style.display = "flex";
 
-    document.getElementById(
-        "taskModal"
-    ).style.display =
-        "flex";
-
-
-    document.getElementById(
-        "taskName"
-    ).focus();
-
+    setTimeout(() => {
+        document.getElementById("taskName").focus();
+    }, 50);
 }
-
 
 function closeModal() {
-
-    document.getElementById(
-        "taskModal"
-    ).style.display =
-        "none";
-
+    document.getElementById("taskModal").style.display = "none";
 }
 
-
-
-/* ================= DATE ================= */
+/* ================= DATE VALIDATION ================= */
 
 function isValidDeadline(value) {
-
-
     const pattern =
         /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/;
 
+    const match = value.match(pattern);
 
-    const match =
-        value.match(pattern);
+    if (!match) return false;
 
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
+    const hour = Number(match[4]);
+    const minute = Number(match[5]);
 
-    if (!match) {
-
-        return false;
-
-    }
-
-
-    const day =
-        Number(match[1]);
-
-
-    const month =
-        Number(match[2]);
-
-
-    const year =
-        Number(match[3]);
-
-
-    const hour =
-        Number(match[4]);
-
-
-    const minute =
-        Number(match[5]);
-
-
-    if (
-        month < 1 ||
-        month > 12
-    ) {
-
-        return false;
-
-    }
-
-
-    if (
-        day < 1 ||
-        day > 31
-    ) {
-
-        return false;
-
-    }
-
-
-    if (
-        hour < 0 ||
-        hour > 23
-    ) {
-
-        return false;
-
-    }
-
-
-    if (
-        minute < 0 ||
-        minute > 59
-    ) {
-
-        return false;
-
-    }
-
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+    if (hour < 0 || hour > 23) return false;
+    if (minute < 0 || minute > 59) return false;
 
     const date =
         new Date(
@@ -1631,825 +1538,566 @@ function isValidDeadline(value) {
             minute
         );
 
-
     return (
-
-        date.getFullYear()
-            === year &&
-
-        date.getMonth()
-            === month - 1 &&
-
-        date.getDate()
-            === day &&
-
-        date.getHours()
-            === hour &&
-
-        date.getMinutes()
-            === minute
-
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day &&
+        date.getHours() === hour &&
+        date.getMinutes() === minute
     );
-
 }
-
-
 
 /* ================= PARSE DATE ================= */
 
 function parseThaiDate(value) {
+    if (!value) return null;
 
+    const pattern =
+        /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?$/;
 
-    if (!value) {
+    const match = value.match(pattern);
 
-        return null;
+    if (!match) return null;
 
-    }
-
-
-    const parts =
-        value.split(" ");
-
-
-    const date =
-        parts[0].split("/");
-
-
-    const time =
-        (
-            parts[1] || "00:00"
-        ).split(":");
-
-
-    if (
-        date.length !== 3 ||
-        time.length !== 2
-    ) {
-
-        return null;
-
-    }
-
-
-    return new Date(
-
-        Number(date[2]),
-
-        Number(date[1]) - 1,
-
-        Number(date[0]),
-
-        Number(time[0]),
-
-        Number(time[1])
-
+    const date = new Date(
+        Number(match[3]),
+        Number(match[2]) - 1,
+        Number(match[1]),
+        Number(match[4] || 0),
+        Number(match[5] || 0)
     );
 
+    if (Number.isNaN(date.getTime())) return null;
+
+    return date;
 }
 
+function getTaskDate(task) {
+    if (task.deadline) {
+        const deadlineDate = parseThaiDate(task.deadline);
 
-
-/* ================= SAVE TASK ================= */
-
-function saveTask() {
-
-
-    const name =
-        document.getElementById(
-            "taskName"
-        ).value.trim();
-
-
-    const detail =
-        document.getElementById(
-            "taskDetail"
-        ).value.trim();
-
-
-    const deadline =
-        document.getElementById(
-            "taskDeadline"
-        ).value.trim();
-
-
-
-    if (name === "") {
-
-        alert(
-            "กรุณาใส่ชื่องาน"
-        );
-
-        return;
-
+        if (deadlineDate) {
+            return deadlineDate;
+        }
     }
 
+    if (task.createdAt) {
+        const createdDate = new Date(task.createdAt);
 
-
-    if (
-        deadline !== "" &&
-        !isValidDeadline(deadline)
-    ) {
-
-        alert(
-
-            "รูปแบบวันที่ไม่ถูกต้อง\n\n" +
-
-            "กรุณาใช้รูปแบบ\n" +
-
-            "05/09/2026 17:00"
-
-        );
-
-        return;
-
+        if (!Number.isNaN(createdDate.getTime())) {
+            return createdDate;
+        }
     }
 
-
-
-    const task = {
-
-        id:
-            Date.now(),
-
-        name:
-            name,
-
-        detail:
-            detail,
-
-        deadline:
-            deadline,
-
-        status:
-            "pending",
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-
-    tasks.push(task);
-
-
-    saveData();
-
-
-    document.getElementById(
-        "taskName"
-    ).value = "";
-
-
-    document.getElementById(
-        "taskDetail"
-    ).value = "";
-
-
-    document.getElementById(
-        "taskDeadline"
-    ).value = "";
-
-
-    closeModal();
-
-
-    renderTasks();
-
-    renderMonthSummary();
-
-}
-
-
-
-async function saveData() {
-
-    // เก็บไว้ในเครื่องด้วย เผื่อเป็นข้อมูลสำรอง
-    localStorage.setItem(
-        "myTasks",
-        JSON.stringify(tasks)
-    );
-
-    // ถ้า Firebase ยังไม่พร้อม ให้เก็บไว้ในเครื่องก่อน
-    if (!firebaseReady) {
-        return;
-    }
-
-    try {
-        await db.collection("tasks").doc("myTasks").set({
-            tasks: tasks,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        console.log("บันทึกข้อมูลลง Firebase แล้ว");
-
-    } catch (error) {
-        console.error("บันทึก Firebase ไม่สำเร็จ:", error);
-        alert("บันทึกข้อมูลไม่สำเร็จ กรุณาตรวจสอบ Firebase Rules");
-    }
+    return null;
 }
 
 /* ================= FIREBASE LOAD ================= */
 
 async function loadData() {
-
     try {
+        setConnectionStatus(
+            "กำลังเข้าสู่ระบบ Firebase..."
+        );
 
-        await auth.signInAnonymously();
+        /*
+         Anonymous Authentication ต้องเปิด:
+         Firebase Console
+         → Authentication
+         → Sign-in method
+         → Anonymous
+         → Enable
+        */
+        if (!auth.currentUser) {
+            await auth.signInAnonymously();
+        }
 
-        const doc =
-            await db.collection("tasks")
-                .doc("myTasks")
-                .get();
+        currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            throw new Error(
+                "ไม่พบผู้ใช้ Firebase"
+            );
+        }
+
+        const ref = getUserTaskRef();
+        const doc = await ref.get();
 
         if (doc.exists) {
-
             const data = doc.data();
 
             if (Array.isArray(data.tasks)) {
                 tasks = data.tasks;
-
-                localStorage.setItem(
-                    "myTasks",
-                    JSON.stringify(tasks)
-                );
+                saveLocalData();
+            } else {
+                tasks = [];
+                saveLocalData();
             }
-
         } else {
-
-            // ยังไม่มีข้อมูลใน Firebase
-            // อัปโหลดข้อมูลจากเครื่องขึ้นไปครั้งแรก
-            await db.collection("tasks")
-                .doc("myTasks")
-                .set({
-                    tasks: tasks,
-                    updatedAt:
-                        firebase.firestore.FieldValue.serverTimestamp()
-                });
+            /*
+             ถ้ายังไม่มีข้อมูลของผู้ใช้นี้
+             ให้เอาข้อมูล localStorage ขึ้น Firebase ครั้งแรก
+            */
+            await ref.set({
+                tasks: tasks,
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+            });
         }
 
         firebaseReady = true;
 
+        setConnectionStatus(
+            "✓ เชื่อมต่อ Firebase แล้ว",
+            "success"
+        );
+
         renderTasks();
         renderMonthSummary();
+        updateSummary();
 
-        console.log("โหลดข้อมูลจาก Firebase แล้ว");
+        console.log(
+            "โหลดข้อมูลจาก Firebase สำเร็จ"
+        );
 
     } catch (error) {
+        firebaseReady = false;
 
         console.error(
             "โหลด Firebase ไม่สำเร็จ:",
             error
         );
 
-        // ถ้า Firebase ใช้งานไม่ได้ ยังใช้ localStorage ต่อได้
-        firebaseReady = false;
+        setConnectionStatus(
+            "⚠ Firebase ยังไม่พร้อม",
+            "error"
+        );
+
+        /*
+         ถ้า Firebase มีปัญหา
+         แอปยังเปิดและใช้ข้อมูล localStorage ได้
+        */
+        renderTasks();
+        renderMonthSummary();
+        updateSummary();
+
+        alert(
+            "เชื่อมต่อ Firebase ไม่สำเร็จ\n\n" +
+            error.message +
+            "\n\n" +
+            "แอปจะยังใช้ข้อมูลในเครื่องชั่วคราว"
+        );
+    }
+}
+
+/* ================= FIREBASE SAVE ================= */
+
+async function saveData() {
+    saveLocalData();
+
+    if (!firebaseReady || !currentUser) {
+        return true;
+    }
+
+    if (isSaving) {
+        return false;
+    }
+
+    isSaving = true;
+
+    try {
+        await getUserTaskRef().set({
+            tasks: tasks,
+            updatedAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        setConnectionStatus(
+            "✓ บันทึก Firebase แล้ว",
+            "success"
+        );
+
+        console.log(
+            "บันทึกข้อมูลลง Firebase สำเร็จ"
+        );
+
+        return true;
+
+    } catch (error) {
+        console.error(
+            "บันทึก Firebase ไม่สำเร็จ:",
+            error
+        );
+
+        setConnectionStatus(
+            "⚠ บันทึก Firebase ไม่สำเร็จ",
+            "error"
+        );
+
+        alert(
+            "บันทึกข้อมูลลง Firebase ไม่สำเร็จ\n\n" +
+            error.message
+        );
+
+        return false;
+
+    } finally {
+        isSaving = false;
+    }
+}
+
+/* ================= ADD TASK ================= */
+
+async function saveTask() {
+    const name =
+        document.getElementById("taskName")
+            .value.trim();
+
+    const detail =
+        document.getElementById("taskDetail")
+            .value.trim();
+
+    const deadline =
+        document.getElementById("taskDeadline")
+            .value.trim();
+
+    if (name === "") {
+        alert("กรุณาใส่ชื่องาน");
+        return;
+    }
+
+    if (
+        deadline !== "" &&
+        !isValidDeadline(deadline)
+    ) {
+        alert(
+            "รูปแบบวันที่ไม่ถูกต้อง\n\n" +
+            "กรุณาใช้รูปแบบ\n" +
+            "05/09/2026 17:00"
+        );
+        return;
+    }
+
+    const task = {
+        id: Date.now(),
+        name: name,
+        detail: detail,
+        deadline: deadline,
+        status: "pending",
+        createdAt: new Date().toISOString()
+    };
+
+    tasks.push(task);
+
+    const button =
+        document.querySelector(
+            '#taskModal .save-btn'
+        );
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "กำลังบันทึก...";
+    }
+
+    const ok = await saveData();
+
+    if (!ok && firebaseReady) {
+        tasks = tasks.filter(
+            item => item.id !== task.id
+        );
+
+        saveLocalData();
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "บันทึกงาน";
+        }
 
         renderTasks();
         renderMonthSummary();
-    }
-}
+        updateSummary();
 
-
-
-/* ================= GET TASK DATE ================= */
-
-function getTaskDate(task) {
-
-
-    if (task.deadline) {
-
-        return parseThaiDate(
-            task.deadline
-        );
-
+        return;
     }
 
+    document.getElementById("taskName").value = "";
+    document.getElementById("taskDetail").value = "";
+    document.getElementById("taskDeadline").value = "";
 
-    return new Date(
-        task.createdAt
-    );
+    if (button) {
+        button.disabled = false;
+        button.textContent = "บันทึกงาน";
+    }
 
+    closeModal();
+
+    renderTasks();
+    renderMonthSummary();
+    updateSummary();
 }
-
-
 
 /* ================= RENDER TASKS ================= */
 
 function renderTasks() {
-
-
     const selectedYear =
-        Number(
-            yearSelect.value
-        );
-
+        Number(yearSelect.value);
 
     const selectedMonth =
-        Number(
-            document.getElementById(
-                "monthSelect"
-            ).value
-        );
-
+        Number(monthSelect.value);
 
     let filteredTasks =
         tasks.filter(task => {
+            const date = getTaskDate(task);
 
-
-            const date =
-                getTaskDate(task);
-
-
-            if (!date) {
-
-                return false;
-
-            }
-
+            if (!date) return false;
 
             return (
-
-                date.getFullYear()
-                    === selectedYear &&
-
-                date.getMonth()
-                    === selectedMonth
-
+                date.getFullYear() === selectedYear &&
+                date.getMonth() === selectedMonth
             );
-
         });
 
-
-
-    if (
-        currentFilter !== "all"
-    ) {
-
+    if (currentFilter !== "all") {
         filteredTasks =
             filteredTasks.filter(
-
                 task =>
-                    task.status
-                    === currentFilter
-
+                    task.status === currentFilter
             );
-
     }
 
-
-
     const taskList =
-        document.getElementById(
-            "taskList"
-        );
-
+        document.getElementById("taskList");
 
     const emptyState =
-        document.getElementById(
-            "emptyState"
-        );
-
+        document.getElementById("emptyState");
 
     taskList.innerHTML = "";
 
+    if (filteredTasks.length === 0) {
+        taskList.style.display = "none";
+        emptyState.style.display = "flex";
+    } else {
+        taskList.style.display = "block";
+        emptyState.style.display = "none";
 
+        filteredTasks.sort((a, b) => {
+            const dateA = getTaskDate(a);
+            const dateB = getTaskDate(b);
 
-    if (
-        filteredTasks.length === 0
-    ) {
+            return (
+                (dateA ? dateA.getTime() : 0) -
+                (dateB ? dateB.getTime() : 0)
+            );
+        });
 
+        filteredTasks.forEach(task => {
+            const card =
+                document.createElement("div");
 
-        taskList.style.display =
-            "none";
+            card.className = "task-card";
 
-
-        emptyState.style.display =
-            "flex";
-
-
-    }
-
-    else {
-
-
-        taskList.style.display =
-            "block";
-
-
-        emptyState.style.display =
-            "none";
-
-
-
-        filteredTasks.forEach(
-            task => {
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "task-card";
-
-
-                const icon =
-
-                    task.status === "done"
-
+            const icon =
+                task.status === "done"
                     ? "✅"
-
                     : "🟡";
 
-
-                const statusText =
-
-                    task.status === "done"
-
+            const statusText =
+                task.status === "done"
                     ? "✓ เสร็จแล้ว"
-
                     : "◷ ยังไม่เสร็จ";
 
-
-                const statusClass =
-
-                    task.status === "done"
-
+            const statusClass =
+                task.status === "done"
                     ? "status-done"
-
                     : "status-pending";
 
+            card.innerHTML = `
+                <div class="task-top">
 
+                    <div>
 
-                card.innerHTML = `
-
-                    <div class="task-top">
-
-                        <div>
-
-                            <div class="task-name">
-
-                                ${icon}
-
-                                ${escapeHtml(
-                                    task.name
-                                )}
-
-                            </div>
-
-
-                            <div class="task-detail">
-
-                                ${
-                                    task.detail
-                                    ? escapeHtml(
-                                        task.detail
-                                    )
-                                    : "ไม่มีรายละเอียด"
-                                }
-
-                            </div>
-
-
-                            <div class="task-deadline">
-
-                                📅 กำหนดส่ง:
-
-                                ${
-                                    task.deadline
-                                    || "ไม่ได้กำหนด"
-                                }
-
-                            </div>
-
+                        <div class="task-name">
+                            ${icon}
+                            ${escapeHtml(task.name)}
                         </div>
 
+                        <div class="task-detail">
+                            ${
+                                task.detail
+                                    ? escapeHtml(task.detail)
+                                    : "ไม่มีรายละเอียด"
+                            }
+                        </div>
 
-                        <button
-
-                            class="
-                                status-btn
-                                ${statusClass}
-                            "
-
-                            onclick="
-                                toggleStatus(
-                                    ${task.id}
-                                )
-                            ">
-
-                            ${statusText}
-
-                        </button>
+                        <div class="task-deadline">
+                            📅 กำหนดส่ง:
+                            ${
+                                task.deadline ||
+                                "ไม่ได้กำหนด"
+                            }
+                        </div>
 
                     </div>
 
+                    <button
+                        class="status-btn ${statusClass}"
+                        onclick="toggleStatus(${Number(task.id)})"
+                    >
+                        ${statusText}
+                    </button>
 
-                    <div class="task-actions">
+                </div>
 
-                        <button
+                <div class="task-actions">
 
-                            class="delete-btn"
+                    <button
+                        class="delete-btn"
+                        onclick="deleteTask(${Number(task.id)})"
+                    >
+                        🗑 ลบงาน
+                    </button>
 
-                            onclick="
-                                deleteTask(
-                                    ${task.id}
-                                )
-                            ">
+                </div>
+            `;
 
-                            🗑 ลบงาน
-
-                        </button>
-
-                    </div>
-
-                `;
-
-
-                taskList.appendChild(
-                    card
-                );
-
-            }
-
-        );
-
+            taskList.appendChild(card);
+        });
     }
 
-
     updateSummary();
-
 }
-
-
 
 /* ================= SUMMARY ================= */
 
 function updateSummary() {
-
-
     const selectedYear =
-        Number(
-            yearSelect.value
-        );
-
+        Number(yearSelect.value);
 
     const yearTasks =
         tasks.filter(task => {
-
-
-            const date =
-                getTaskDate(task);
-
+            const date = getTaskDate(task);
 
             return (
-
                 date &&
-                date.getFullYear()
-                    === selectedYear
-
+                date.getFullYear() === selectedYear
             );
-
         });
-
 
     const done =
         yearTasks.filter(
-
-            task =>
-                task.status === "done"
-
+            task => task.status === "done"
         ).length;
-
 
     const pending =
         yearTasks.filter(
-
-            task =>
-                task.status === "pending"
-
+            task => task.status === "pending"
         ).length;
 
+    document.getElementById("totalCount")
+        .textContent = tasks.length;
 
+    document.getElementById("doneCount")
+        .textContent = done;
 
-    document.getElementById(
-        "totalCount"
-    ).textContent =
+    document.getElementById("pendingCount")
+        .textContent = pending;
 
-        tasks.length;
-
-
-    document.getElementById(
-        "doneCount"
-    ).textContent =
-
-        done;
-
-
-    document.getElementById(
-        "pendingCount"
-    ).textContent =
-
-        pending;
-
-
-    document.getElementById(
-        "selectedYearCount"
-    ).textContent =
-
-        yearTasks.length;
-
+    document.getElementById("selectedYearCount")
+        .textContent = yearTasks.length;
 }
-
-
 
 /* ================= MONTH SUMMARY ================= */
 
 function renderMonthSummary() {
-
-
     const year =
-        Number(
-            summaryYearSelect.value
-        );
-
+        Number(summaryYearSelect.value);
 
     const grid =
-        document.getElementById(
-            "monthGrid"
-        );
-
+        document.getElementById("monthGrid");
 
     grid.innerHTML = "";
 
-
-
     const selectedMainYear =
-        Number(
-            yearSelect.value
-        );
-
+        Number(yearSelect.value);
 
     const selectedMainMonth =
-        Number(
-            document.getElementById(
-                "monthSelect"
-            ).value
-        );
-
-
+        Number(monthSelect.value);
 
     for (
         let month = 0;
         month < 12;
         month++
     ) {
-
-
         const monthTasks =
             tasks.filter(task => {
+                const date = getTaskDate(task);
 
-
-                const date =
-                    getTaskDate(task);
-
-
-                if (!date) {
-
-                    return false;
-
-                }
-
+                if (!date) return false;
 
                 return (
-
-                    date.getFullYear()
-                        === year &&
-
-                    date.getMonth()
-                        === month
-
+                    date.getFullYear() === year &&
+                    date.getMonth() === month
                 );
-
             });
-
-
 
         const done =
             monthTasks.filter(
-
-                task =>
-                    task.status === "done"
-
+                task => task.status === "done"
             ).length;
-
 
         const pending =
             monthTasks.filter(
-
-                task =>
-                    task.status === "pending"
-
+                task => task.status === "pending"
             ).length;
 
-
-
         const card =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
-
-        card.className =
-            "month-card";
-
-
+        card.className = "month-card";
 
         if (
-
             year === selectedMainYear &&
-
             month === selectedMainMonth
-
         ) {
-
-            card.classList.add(
-                "current"
-            );
-
+            card.classList.add("current");
         }
 
-
-
         card.innerHTML = `
-
             <div class="month-name">
-
                 ${thaiMonths[month]}
-
             </div>
-
 
             <div class="month-number">
-
                 ${monthTasks.length}
-
             </div>
-
 
             <div class="month-label">
-
                 งานทั้งหมด
-
             </div>
-
 
             <div class="month-status">
 
                 <span class="month-done">
-
                     ✓ ${done} เสร็จ
-
                 </span>
 
-
                 <span class="month-pending">
-
                     ◷ ${pending} ยัง
-
                 </span>
 
             </div>
-
         `;
-
-
 
         card.addEventListener(
             "click",
             function() {
+                yearSelect.value = year;
+                monthSelect.value = month;
 
-
-                yearSelect.value =
-                    year;
-
-
-                document.getElementById(
-                    "monthSelect"
-                ).value =
-                    month;
-
-
-                currentFilter =
-                    "all";
-
+                currentFilter = "all";
 
                 document
-                    .querySelectorAll(
-                        ".filter"
-                    )
+                    .querySelectorAll(".filter")
                     .forEach(
                         btn =>
                             btn.classList.remove(
@@ -2457,186 +2105,137 @@ function renderMonthSummary() {
                             )
                     );
 
-
-                document
-                    .querySelector(
+                const allButton =
+                    document.querySelector(
                         '[data-filter="all"]'
-                    )
-                    .classList.add(
-                        "active"
                     );
 
+                if (allButton) {
+                    allButton.classList.add("active");
+                }
 
                 renderTasks();
-
-
                 renderMonthSummary();
 
-
                 window.scrollTo({
-
                     top: 0,
-
-                    behavior:
-                        "smooth"
-
+                    behavior: "smooth"
                 });
-
             }
         );
 
-
-        grid.appendChild(
-            card
-        );
-
+        grid.appendChild(card);
     }
-
 }
-
-
 
 /* ================= STATUS ================= */
 
-function toggleStatus(id) {
-
-
+async function toggleStatus(id) {
     const task =
         tasks.find(
-            task =>
-                task.id === id
+            item => Number(item.id) === Number(id)
         );
 
+    if (!task) return;
 
-    if (!task) {
-
-        return;
-
-    }
-
+    const oldStatus = task.status;
 
     task.status =
-
         task.status === "done"
-
-        ? "pending"
-
-        : "done";
-
-
-    saveData();
-
+            ? "pending"
+            : "done";
 
     renderTasks();
-
-
     renderMonthSummary();
 
+    const ok = await saveData();
+
+    if (!ok && firebaseReady) {
+        task.status = oldStatus;
+
+        saveLocalData();
+
+        renderTasks();
+        renderMonthSummary();
+        updateSummary();
+    }
 }
-
-
 
 /* ================= DELETE ================= */
 
-function deleteTask(id) {
-
-
+async function deleteTask(id) {
     if (
         !confirm(
             "ต้องการลบงานนี้หรือไม่?"
         )
     ) {
-
         return;
-
     }
 
+    const oldTasks = [...tasks];
 
     tasks =
         tasks.filter(
             task =>
-                task.id !== id
+                Number(task.id) !== Number(id)
         );
-
-
-    saveData();
-
 
     renderTasks();
-
-
     renderMonthSummary();
 
+    const ok = await saveData();
+
+    if (!ok && firebaseReady) {
+        tasks = oldTasks;
+
+        saveLocalData();
+
+        renderTasks();
+        renderMonthSummary();
+        updateSummary();
+    }
 }
 
-
-
-/* ================= ESCAPE ================= */
+/* ================= ESCAPE HTML ================= */
 
 function escapeHtml(text) {
-
-
     const div =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     div.textContent =
-        text;
-
+        String(text ?? "");
 
     return div.innerHTML;
-
 }
-
-
 
 /* ================= YEAR CHANGE ================= */
 
 yearSelect.addEventListener(
     "change",
     function() {
-
-
         renderTasks();
-
         renderMonthSummary();
-
     }
 );
 
-
+/* ================= SUMMARY YEAR CHANGE ================= */
 
 summaryYearSelect.addEventListener(
     "change",
     function() {
-
-
         renderMonthSummary();
-
     }
 );
 
-
-
 /* ================= MONTH CHANGE ================= */
 
-document.getElementById(
-    "monthSelect"
-).addEventListener(
+monthSelect.addEventListener(
     "change",
     function() {
-
-
-        currentFilter =
-            "all";
-
+        currentFilter = "all";
 
         document
-            .querySelectorAll(
-                ".filter"
-            )
+            .querySelectorAll(".filter")
             .forEach(
                 btn =>
                     btn.classList.remove(
@@ -2644,120 +2243,168 @@ document.getElementById(
                     )
             );
 
-
-        document
-            .querySelector(
+        const allButton =
+            document.querySelector(
                 '[data-filter="all"]'
-            )
-            .classList.add(
-                "active"
             );
 
+        if (allButton) {
+            allButton.classList.add("active");
+        }
 
         renderTasks();
-
-
         renderMonthSummary();
-
     }
 );
-
-
 
 /* ================= FILTER ================= */
 
 document
-    .querySelectorAll(
-        ".filter"
-    )
-    .forEach(
+    .querySelectorAll(".filter")
+    .forEach(button => {
 
-        button => {
+        button.addEventListener(
+            "click",
+            function() {
+                currentFilter =
+                    this.dataset.filter;
 
-
-            button.addEventListener(
-
-                "click",
-
-                function() {
-
-
-                    currentFilter =
-                        this.dataset.filter;
-
-
-                    document
-                        .querySelectorAll(
-                            ".filter"
-                        )
-                        .forEach(
-                            btn =>
-                                btn.classList.remove(
-                                    "active"
-                                )
-                        );
-
-
-                    this.classList.add(
-                        "active"
+                document
+                    .querySelectorAll(".filter")
+                    .forEach(
+                        btn =>
+                            btn.classList.remove(
+                                "active"
+                            )
                     );
 
+                this.classList.add("active");
 
-                    renderTasks();
+                renderTasks();
+            }
+        );
 
-                }
-
-            );
-
-        }
-
-    );
-
-
+    });
 
 /* ================= CLOSE MODAL ================= */
 
 document
-    .getElementById(
-        "taskModal"
-    )
+    .getElementById("taskModal")
     .addEventListener(
-
         "click",
-
         function(event) {
-
-
-            if (
-                event.target === this
-            ) {
-
+            if (event.target === this) {
                 closeModal();
-
             }
-
         }
-
     );
 
+/* ================= ENTER / ESC ================= */
 
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape" &&
+            document.getElementById(
+                "taskModal"
+            ).style.display === "flex"
+        ) {
+            closeModal();
+        }
+
+        if (
+            event.key === "Enter" &&
+            event.ctrlKey &&
+            document.getElementById(
+                "taskModal"
+            ).style.display === "flex"
+        ) {
+            saveTask();
+        }
+    }
+);
+
+/* ================= DEADLINE INPUT ================= */
+
+document
+    .getElementById("taskDeadline")
+    .addEventListener(
+        "input",
+        function(event) {
+
+            let value =
+                event.target.value
+                    .replace(/[^\d]/g, "")
+                    .slice(0, 12);
+
+            if (value.length > 2) {
+                value =
+                    value.slice(0, 2) +
+                    "/" +
+                    value.slice(2);
+            }
+
+            if (value.length > 5) {
+                value =
+                    value.slice(0, 5) +
+                    "/" +
+                    value.slice(5);
+            }
+
+            if (value.length > 10) {
+                value =
+                    value.slice(0, 10) +
+                    " " +
+                    value.slice(10);
+            }
+
+            if (value.length > 13) {
+                value =
+                    value.slice(0, 13) +
+                    ":" +
+                    value.slice(13);
+            }
+
+            event.target.value =
+                value.slice(0, 16);
+        }
+    );
 
 /* ================= START ================= */
 
+createConnectionStatus();
 showToday();
 
-document.getElementById(
-    "monthSelect"
-).value =
-    new Date().getMonth();
-
-// แสดงข้อมูลเดิมก่อน แล้วค่อยโหลดข้อมูลล่าสุดจาก Firebase
 renderTasks();
 renderMonthSummary();
+updateSummary();
 
-// เชื่อม Firebase และโหลดข้อมูล
+/*
+  Firebase Authentication:
+  Authentication → Sign-in method → Anonymous → Enable
+
+  Firestore Rules:
+  rules_version = '2';
+
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /tasks/{userId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
+    }
+  }
+*/
+
+auth.onAuthStateChanged(function(user) {
+    if (user) {
+        currentUser = user;
+    }
+});
+
 loadData();
-
 </script>
 
 </body>
