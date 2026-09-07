@@ -1043,6 +1043,569 @@ select {
 @media(max-width:900px){.month-plan-grid{grid-template-columns:repeat(3,1fr)}.workload-summary{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.annual-planning-panel{padding:18px}.annual-planning-head{align-items:flex-start}.workload-chart{gap:4px}.month-plan-grid{grid-template-columns:repeat(2,1fr)}.workload-month-label{font-size:9px}}
 
+
+/* ================= MOBILE UX POLISH ================= */
+
+@media (max-width: 600px){
+
+    html{
+        -webkit-text-size-adjust:100%;
+    }
+
+    body{
+        padding:10px !important;
+        overflow-x:hidden;
+    }
+
+    .container{
+        width:100%;
+        max-width:100%;
+        margin:0;
+    }
+
+    /* Header */
+    .header{
+        padding:12px 4px !important;
+        margin-bottom:12px !important;
+        gap:10px;
+    }
+
+    .logo-area{
+        min-width:0;
+        gap:9px !important;
+    }
+
+    .logo{
+        flex:0 0 auto;
+        width:46px !important;
+        height:46px !important;
+        font-size:22px !important;
+    }
+
+    .title{
+        min-width:0;
+    }
+
+    .title-line{
+        gap:5px;
+    }
+
+    .title h1{
+        font-size:20px !important;
+        line-height:1.2;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        max-width:calc(100vw - 105px);
+    }
+
+    .edit-title-btn{
+        width:28px;
+        height:28px;
+        flex:0 0 auto;
+    }
+
+    .title p{
+        font-size:11px !important;
+        margin-top:3px;
+    }
+
+    /* Mobile top navigation */
+    .page-nav{
+        margin:0 0 12px !important;
+        padding:5px !important;
+        gap:4px !important;
+        overflow-x:auto;
+        overflow-y:hidden;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+        border-radius:14px !important;
+        position:sticky;
+        top:6px;
+        z-index:20;
+    }
+
+    .page-nav::-webkit-scrollbar{
+        display:none;
+    }
+
+    .page-nav-btn{
+        flex:0 0 auto !important;
+        min-width:108px !important;
+        min-height:42px;
+        padding:9px 11px !important;
+        font-size:12px !important;
+        white-space:nowrap;
+    }
+
+    /* Summary cards */
+    .summary{
+        grid-template-columns:1fr 1fr !important;
+        gap:8px !important;
+        margin-bottom:12px;
+    }
+
+    .summary-card{
+        min-height:78px !important;
+        padding:11px !important;
+        border-radius:14px !important;
+    }
+
+    .summary-icon{
+        width:36px !important;
+        height:36px !important;
+        font-size:17px !important;
+    }
+
+    .summary-text{
+        font-size:11px !important;
+    }
+
+    .summary-number{
+        font-size:21px !important;
+    }
+
+    /* Main task panel */
+    .main-card{
+        border-radius:16px !important;
+        overflow:hidden;
+    }
+
+    .main-header{
+        padding:13px !important;
+        gap:10px !important;
+    }
+
+    .main-title{
+        font-size:17px !important;
+    }
+
+    .controls{
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:8px !important;
+        width:100%;
+    }
+
+    .controls select,
+    .controls .add-btn{
+        grid-column:auto !important;
+        width:100% !important;
+        min-height:42px;
+        font-size:13px !important;
+    }
+
+    .controls .add-btn{
+        grid-column:1 / -1 !important;
+    }
+
+    .search-wrap{
+        width:100% !important;
+        min-width:0 !important;
+        height:42px !important;
+        grid-column:1 / -1 !important;
+        order:-1 !important;
+    }
+
+    .search-wrap input{
+        font-size:13px !important;
+    }
+
+    .filter{
+        min-height:40px;
+        padding:8px 7px !important;
+        font-size:12px !important;
+    }
+
+    /* Task cards */
+    #taskList{
+        padding:12px !important;
+    }
+
+    .task-card{
+        padding:13px !important;
+        border-radius:14px !important;
+        margin-bottom:10px !important;
+    }
+
+    .task-top{
+        gap:8px !important;
+    }
+
+    .task-title{
+        font-size:15px !important;
+        line-height:1.35;
+    }
+
+    .task-detail{
+        font-size:12px !important;
+        line-height:1.45;
+    }
+
+    .task-actions{
+        width:100%;
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:7px !important;
+        margin-top:10px;
+    }
+
+    .task-actions button,
+    .status-btn,
+    .edit-btn,
+    .delete-btn{
+        min-height:40px;
+        margin:0 !important;
+        width:100%;
+        font-size:12px !important;
+    }
+
+    /* Calendar / selected month */
+    .month-summary{
+        padding:13px !important;
+        border-radius:16px !important;
+    }
+
+    .month-summary-header{
+        gap:10px !important;
+        margin-bottom:10px !important;
+    }
+
+    .month-summary-title{
+        font-size:17px !important;
+    }
+
+    .year-selector{
+        width:100%;
+    }
+
+    .year-selector select{
+        flex:1;
+        min-height:40px;
+    }
+
+    .month-calendar-inner{
+        padding:12px !important;
+    }
+
+    .month-picker{
+        gap:7px !important;
+    }
+
+    .month-picker-side{
+        width:40px !important;
+        height:40px !important;
+        flex:0 0 40px;
+    }
+
+    .month-picker-center select{
+        min-width:0 !important;
+        width:100%;
+        font-size:14px !important;
+    }
+
+    .month-card{
+        grid-template-columns:1fr auto !important;
+        padding:14px !important;
+        gap:7px 10px !important;
+    }
+
+    .month-name{
+        font-size:16px !important;
+    }
+
+    .month-number{
+        font-size:34px !important;
+    }
+
+    /* Annual overview */
+    .annual-planning-panel{
+        padding:14px !important;
+        border-radius:17px !important;
+    }
+
+    .annual-planning-head{
+        flex-direction:column;
+        align-items:stretch !important;
+        gap:9px !important;
+    }
+
+    .annual-planning-head h2{
+        font-size:18px;
+    }
+
+    .annual-planning-head p{
+        font-size:11px;
+        line-height:1.45;
+    }
+
+    .annual-planning-head select{
+        width:100%;
+        min-height:42px;
+    }
+
+    .workload-summary{
+        grid-template-columns:1fr 1fr !important;
+        gap:8px !important;
+    }
+
+    .workload-summary-card{
+        padding:11px !important;
+        border-radius:13px !important;
+    }
+
+    .workload-summary-card .label{
+        font-size:10px !important;
+    }
+
+    .workload-summary-card strong{
+        font-size:18px !important;
+    }
+
+    .workload-chart-wrap{
+        padding:10px !important;
+        border-radius:14px !important;
+        overflow:hidden;
+    }
+
+    .workload-chart-title{
+        font-size:13px !important;
+        align-items:flex-start;
+        margin-bottom:9px !important;
+    }
+
+    .workload-chart-note{
+        font-size:9px !important;
+        text-align:right;
+    }
+
+    .workload-chart{
+        height:165px !important;
+        gap:3px !important;
+    }
+
+    .workload-bar{
+        width:calc(100% - 4px) !important;
+        max-width:24px;
+    }
+
+    .workload-bar-value{
+        font-size:9px !important;
+    }
+
+    .workload-month-label{
+        font-size:8px !important;
+    }
+
+    .month-plan-grid{
+        grid-template-columns:1fr !important;
+        gap:8px !important;
+    }
+
+    .month-plan-card{
+        padding:13px !important;
+        border-radius:14px !important;
+    }
+
+    .month-plan-name{
+        font-size:14px !important;
+    }
+
+    .month-plan-count{
+        font-size:20px !important;
+    }
+
+    .month-plan-day{
+        min-width:30px;
+        height:28px;
+        font-size:11px;
+    }
+
+    /* Detailed dashboard */
+    .dashboard-head{
+        padding:15px !important;
+        border-radius:16px !important;
+        gap:10px !important;
+        margin-bottom:10px !important;
+    }
+
+    .dashboard-head h2{
+        font-size:18px !important;
+    }
+
+    .dashboard-head p{
+        font-size:11px !important;
+        line-height:1.4;
+    }
+
+    .dashboard-filter-row{
+        display:grid !important;
+        grid-template-columns:1fr 1fr;
+        gap:7px !important;
+        width:100% !important;
+    }
+
+    .dashboard-filter-row select{
+        width:100% !important;
+        min-height:42px;
+        font-size:12px !important;
+    }
+
+    .dashboard-stats{
+        grid-template-columns:1fr 1fr !important;
+        gap:8px !important;
+        margin-bottom:10px !important;
+    }
+
+    .stat-card{
+        padding:12px !important;
+        border-radius:14px !important;
+    }
+
+    .stat-card span{
+        font-size:10px !important;
+    }
+
+    .stat-card strong{
+        font-size:22px !important;
+    }
+
+    .dashboard-panel,
+    .all-tasks-panel{
+        padding:13px !important;
+        border-radius:16px !important;
+    }
+
+    .panel-title{
+        font-size:15px !important;
+    }
+
+    .day-group{
+        border-radius:12px !important;
+        margin-bottom:8px !important;
+    }
+
+    .day-group-head{
+        padding:9px 10px !important;
+        font-size:11px !important;
+    }
+
+    .day-task{
+        padding:10px !important;
+        align-items:flex-start !important;
+    }
+
+    .day-task-title{
+        font-size:12px !important;
+        line-height:1.4;
+    }
+
+    .day-task-meta{
+        font-size:10px !important;
+    }
+
+    /* All tasks */
+    .all-tasks-search{
+        width:100% !important;
+        min-width:0 !important;
+        min-height:42px;
+        font-size:12px !important;
+    }
+
+    .all-task-row{
+        padding:11px 3px !important;
+        grid-template-columns:1fr !important;
+        gap:5px !important;
+    }
+
+    .all-task-date{
+        font-size:11px !important;
+    }
+
+    .all-task-name{
+        font-size:12px !important;
+        line-height:1.4;
+    }
+
+    .all-task-detail{
+        font-size:10px !important;
+        line-height:1.35;
+    }
+
+    /* Modals */
+    .modal{
+        padding:10px !important;
+    }
+
+    .modal-box{
+        width:100% !important;
+        max-width:none !important;
+        max-height:92vh;
+        overflow-y:auto;
+        border-radius:17px !important;
+        padding:16px !important;
+    }
+
+    .modal-header{
+        position:sticky;
+        top:-16px;
+        background:#fff;
+        padding-top:2px;
+        padding-bottom:8px;
+        z-index:2;
+    }
+
+    .modal-box input,
+    .modal-box textarea,
+    .modal-box select{
+        min-height:42px;
+        font-size:13px !important;
+    }
+
+    .modal-box textarea{
+        min-height:110px;
+    }
+
+    .modal-actions{
+        display:grid !important;
+        grid-template-columns:1fr 1fr !important;
+        gap:8px !important;
+    }
+
+    .modal-actions button{
+        min-height:44px;
+        width:100%;
+    }
+
+}
+
+@media (max-width:380px){
+    .page-nav-btn{
+        min-width:100px !important;
+        font-size:11px !important;
+    }
+
+    .summary{
+        gap:6px !important;
+    }
+
+    .summary-card{
+        padding:9px !important;
+    }
+
+    .workload-summary{
+        gap:6px !important;
+    }
+
+    .workload-summary-card strong{
+        font-size:17px !important;
+    }
+
+    .dashboard-stats{
+        gap:6px !important;
+    }
+}
+
 </style>
 
 </head>
@@ -2582,7 +3145,7 @@ function renderSelectedSummaryMonth(year, selectedMonth) {
     }
 }
 
-/* ================= STATUS ================= 
+/* ================= STATUS ================= */
 
 async function toggleStatus(id) {
     const task =
