@@ -37,6 +37,9 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 const auth = firebase.auth();
+
+// Keep Anonymous login persistent on this device so each user keeps the same Firebase data.
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
 </script>
 
 <style>
@@ -1608,18 +1611,24 @@ select {
 
 
 /* ================= ROUTINE WORK LOG ================= */
-.routine-head{background:#fff;border-radius:22px;padding:24px 26px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:15px;box-shadow:0 5px 25px rgba(40,30,80,.07)}
-.routine-head h2{margin:0 0 5px;font-size:22px}.routine-head p{margin:0;color:#888699;font-size:13px}.routine-today{font-size:12px;font-weight:700;color:#6845df;background:#f5f2ff;padding:10px 13px;border-radius:12px;white-space:nowrap}
-.routine-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.routine-card{border:1px solid #eeeaf9;border-radius:18px;padding:17px;background:#fff;display:flex;align-items:center;gap:13px;box-shadow:0 5px 20px rgba(40,30,80,.05);text-align:left;cursor:pointer;width:100%;font:inherit}.routine-card:hover{transform:translateY(-2px)}
-.routine-icon{width:45px;height:45px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:#f3efff;font-size:23px;flex:0 0 auto}.routine-info{min-width:0;flex:1}.routine-info h3{margin:0 0 4px;font-size:15px;color:#30294d}.routine-info p{margin:0;color:#9996a5;font-size:11px;line-height:1.4}.routine-add{width:34px;height:34px;border-radius:10px;background:#f3efff;color:#6845df;display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 auto}
-.routine-log-panel{background:#fff;border:1px solid #eeeaf9;border-radius:20px;padding:20px;box-shadow:0 5px 20px rgba(40,30,80,.05)}.routine-log-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.routine-log-head h3{margin:0 0 3px;font-size:17px}.routine-log-head p{margin:0;color:#9996a5;font-size:11px}
-#routineLogFilter{min-height:40px;border:1px solid #e4def4;border-radius:10px;padding:7px 10px;background:#fff;color:#554a73}.routine-log-item{border:1px solid #eeeaf9;border-radius:14px;padding:13px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start}.routine-log-badge{width:38px;height:38px;border-radius:11px;background:#f3efff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:19px}.routine-log-content{flex:1;min-width:0}.routine-log-title{font-weight:800;font-size:13px;color:#342d51}.routine-log-meta{font-size:10px;color:#8e899e;margin-top:3px}.routine-log-detail{font-size:11px;color:#777386;margin-top:6px;line-height:1.45;white-space:pre-wrap}.routine-log-actions{display:flex;gap:5px}.routine-log-actions button{border:0;background:#f6f4fa;border-radius:8px;padding:7px 8px;cursor:pointer;font-size:11px}.routine-log-actions .delete-log{color:#d44b4b}.routine-empty{padding:28px 10px;text-align:center;color:#aaa6b5;font-size:12px}.routine-status-badge{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700}.routine-status-received{background:#eaf7ef;color:#218449}.routine-status-processing{background:#eef4ff;color:#3867c7}.routine-status-done{background:#edf8ef;color:#2d8b4f}
+.routine-page-wrap{max-width:1180px;margin:0 auto;padding-bottom:30px}
+.routine-head{background:linear-gradient(135deg,#ffffff 0%,#faf8ff 100%);border:1px solid #eee9fa;border-radius:24px;padding:22px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 8px 28px rgba(56,42,102,.06)}
+.routine-head h2{margin:0 0 5px;font-size:22px;color:#292342}.routine-head p{margin:0;color:#89839b;font-size:12px}.routine-today{font-size:12px;font-weight:800;color:#6543d5;background:#f1edff;padding:10px 13px;border-radius:12px;white-space:nowrap}
+.routine-tools{background:#fff;border:1px solid #eee9fa;border-radius:18px;padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;gap:12px;box-shadow:0 5px 18px rgba(56,42,102,.04)}
+.routine-search-wrap{position:relative;flex:1}.routine-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:15px;color:#9992aa;pointer-events:none}.routine-search{width:100%;box-sizing:border-box;border:1px solid #e7e1f2;border-radius:12px;padding:11px 14px 11px 38px;font:inherit;font-size:13px;outline:none;background:#fcfbff;color:#332d4e}.routine-search:focus{border-color:#bcaaf2;box-shadow:0 0 0 3px #f1edff}.routine-count{font-size:11px;font-weight:800;color:#746d86;white-space:nowrap;background:#f7f4fc;padding:10px 12px;border-radius:10px}
+.routine-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}.routine-card{border:1px solid #eee9f8;border-radius:18px;padding:16px 17px;background:#fff;display:flex;align-items:center;gap:13px;box-shadow:0 5px 20px rgba(40,30,80,.045);text-align:left;cursor:pointer;width:100%;font:inherit;transition:.18s ease}.routine-card:hover{transform:translateY(-2px);border-color:#d9cef5;box-shadow:0 10px 25px rgba(70,50,130,.09)}.routine-card.is-hidden{display:none}
+.routine-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#f3efff;font-size:23px;flex:0 0 auto}.routine-info{min-width:0;flex:1}.routine-info h3{margin:0 0 4px;font-size:15px;color:#30294d}.routine-info p{margin:0;color:#9996a5;font-size:11px;line-height:1.45}.routine-add{width:35px;height:35px;border-radius:11px;background:#f3efff;color:#6845df;display:flex;align-items:center;justify-content:center;font-size:22px;flex:0 0 auto}.routine-card:hover .routine-add{background:#6845df;color:#fff}
+.routine-log-panel{background:#fff;border:1px solid #eee9f8;border-radius:20px;padding:18px;box-shadow:0 5px 20px rgba(40,30,80,.045)}.routine-log-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.routine-log-head h3{margin:0 0 3px;font-size:17px;color:#30294d}.routine-log-head p{margin:0;color:#9996a5;font-size:11px}
+#routineLogFilter{min-height:40px;border:1px solid #e4def4;border-radius:10px;padding:7px 10px;background:#fff;color:#554a73;outline:none}.routine-log-item{border:1px solid #eeeaf9;border-radius:14px;padding:13px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start;transition:.15s}.routine-log-item:hover{background:#fcfbff}.routine-log-badge{width:38px;height:38px;border-radius:11px;background:#f3efff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:19px}.routine-log-content{flex:1;min-width:0}.routine-log-title{font-weight:800;font-size:13px;color:#342d51}.routine-log-meta{font-size:10px;color:#8e899e;margin-top:3px}.routine-log-detail{font-size:11px;color:#777386;margin-top:6px;line-height:1.45;white-space:pre-wrap}.routine-log-actions{display:flex;gap:5px}.routine-log-actions button{border:0;background:#f6f4fa;border-radius:8px;padding:7px 8px;cursor:pointer;font-size:11px}.routine-log-actions .delete-log{color:#d44b4b}.routine-empty{padding:28px 10px;text-align:center;color:#aaa6b5;font-size:12px}.routine-status-badge{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700}.routine-status-received{background:#eaf7ef;color:#218449}.routine-status-processing{background:#eef4ff;color:#3867c7}.routine-status-done{background:#edf8ef;color:#2d8b4f}
 .routine-modal{display:none;position:fixed;inset:0;background:rgba(25,20,45,.42);z-index:10000;padding:15px;align-items:center;justify-content:center}.routine-modal.show{display:flex}.routine-modal-box{width:min(520px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .routine-time-wrap{position:relative;width:100%}.routine-time-suggestions{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;background:#fff;border:1px solid #e4def4;border-radius:10px;box-shadow:0 8px 20px rgba(40,30,80,.12);max-height:180px;overflow:auto;padding:4px}.routine-time-suggestions.show{display:block}.routine-time-suggestion{width:100%;border:0;background:#fff;text-align:left;padding:10px 12px;border-radius:7px;font:inherit;font-size:13px;color:#342d51;cursor:pointer}.routine-time-suggestion:hover,.routine-time-suggestion:active{background:#f3efff}
 .routine-detail-wrap{position:relative;width:100%}.routine-detail-suggestions{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:25;background:#fff;border:1px solid #e4def4;border-radius:10px;box-shadow:0 8px 20px rgba(40,30,80,.12);max-height:220px;overflow:auto;padding:4px}.routine-detail-suggestions.show{display:block}.routine-detail-suggestion{width:100%;border:0;background:#fff;text-align:left;padding:10px 12px;border-radius:7px;font:inherit;font-size:12px;color:#342d51;cursor:pointer;white-space:normal;line-height:1.4}.routine-detail-suggestion:hover,.routine-detail-suggestion:active{background:#f3efff}.routine-detail-suggestion small{display:block;color:#9996a5;font-size:10px;margin-top:2px}.routine-modal-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:15px}.routine-modal-head h3{margin:0 0 3px;font-size:18px}.routine-modal-head p{margin:0;color:#9996a5;font-size:11px}.routine-modal-head button{border:0;background:#f3f1f7;width:34px;height:34px;border-radius:9px;font-size:23px;cursor:pointer}.routine-modal-box label{display:block;margin:10px 0 5px;font-size:11px;font-weight:700;color:#615a73}.routine-modal-box input,.routine-modal-box textarea,.routine-modal-box select{width:100%;box-sizing:border-box;border:1px solid #e4def4;border-radius:10px;padding:10px;font:inherit;font-size:13px;background:#fff}.routine-log-status-select{min-height:42px}.routine-status-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;margin-left:5px}.routine-status-urgent{background:#ffe7e7;color:#c73535}.routine-status-normal{background:#e7f8ed;color:#25834b}.routine-status-pending{background:#fff4d8;color:#9a6b00}.routine-modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.routine-modal-actions button{min-height:44px;border:0;border-radius:10px;font-weight:700;cursor:pointer}.routine-cancel{background:#f2f0f6;color:#625d70}.routine-save{background:#6845df;color:#fff}
-@media(max-width:700px){.routine-grid{grid-template-columns:1fr;gap:9px}.routine-head{padding:16px;border-radius:16px}.routine-head h2{font-size:18px}.routine-head p{font-size:11px}.routine-today{font-size:10px;padding:8px}.routine-card{padding:13px;border-radius:14px}.routine-icon{width:40px;height:40px;font-size:20px}.routine-info h3{font-size:14px}.routine-info p{font-size:10px}.routine-log-panel{padding:13px;border-radius:16px}.routine-log-head{align-items:stretch;flex-direction:column}.routine-log-head select{width:100%}.routine-log-item{padding:11px}.routine-log-actions{flex-direction:column}.routine-modal{padding:10px}.routine-modal-box{padding:16px;border-radius:17px}}
+@media(max-width:700px){.routine-page-wrap{padding-bottom:20px}.routine-grid{grid-template-columns:1fr;gap:9px}.routine-head{padding:16px;border-radius:16px;align-items:flex-start;flex-direction:column}.routine-head h2{font-size:18px}.routine-head p{font-size:11px}.routine-today{font-size:10px;padding:8px}.routine-tools{padding:10px;align-items:stretch;flex-direction:column}.routine-search-wrap{width:100%}.routine-count{align-self:flex-start}.routine-card{padding:13px;border-radius:14px}.routine-icon{width:40px;height:40px;font-size:20px}.routine-info h3{font-size:14px}.routine-info p{font-size:10px}.routine-log-panel{padding:13px;border-radius:16px}.routine-log-head{align-items:stretch;flex-direction:column}.routine-log-head select{width:100%}.routine-log-item{padding:11px}.routine-log-actions{flex-direction:column}.routine-modal{padding:10px}.routine-modal-box{padding:16px;border-radius:17px}}
 
 .routine-delete-modal{position:fixed;inset:0;background:rgba(30,24,50,.48);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}.routine-delete-modal.show{display:flex}.routine-delete-box{width:min(390px,100%);background:#fff;border-radius:20px;padding:24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.2)}.routine-delete-icon{font-size:42px;margin-bottom:8px}.routine-delete-box h3{margin:0 0 7px;color:#30284b;font-size:20px}.routine-delete-box p{margin:0 0 20px;color:#817b91;font-size:13px;line-height:1.5;word-break:break-word}.routine-delete-actions{display:flex;gap:10px}.routine-delete-actions button{flex:1;border:0;border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer}.routine-delete-actions button:first-child{background:#f0eef5;color:#615b70}.routine-delete-actions button:last-child{background:#e9535f;color:#fff}
+
+/* ================= NOTIFICATION CENTER ================= */
+.notify-wrap{position:relative;margin-left:auto}.notify-btn{border:1px solid #e6e0f2;background:#fff;border-radius:12px;padding:10px 13px;cursor:pointer;font-weight:700;color:#4d4563}.notify-badge{display:none;position:absolute;right:5px;top:4px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#e9535f;color:#fff;font-size:10px;align-items:center;justify-content:center}.notify-badge.show{display:flex}.notify-panel{position:absolute;right:0;top:48px;width:min(380px,calc(100vw - 28px));background:#fff;border-radius:18px;box-shadow:0 18px 50px rgba(40,30,80,.18);border:1px solid #eee8f7;padding:15px;display:none;z-index:9998}.notify-panel.show{display:block}.notify-panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.notify-panel-head h3{margin:0;color:#30284b}.notify-panel-head button{border:0;background:none;cursor:pointer;color:#777}.notify-item{padding:11px 0;border-top:1px solid #f0edf5}.notify-item strong{display:block;color:#3d3654}.notify-item span{font-size:12px;color:#8a8498}.notify-empty{padding:18px;text-align:center;color:#8a8498;font-size:13px}.notify-permission{display:flex;gap:8px;margin-bottom:10px}.notify-permission button{border:0;border-radius:9px;padding:8px 10px;background:#f0ebff;color:#6845df;font-weight:700;cursor:pointer}.notify-overdue{color:#d44b4b!important}.notify-soon{color:#c58400!important}
 </style>
 
 </head>
@@ -1677,6 +1686,14 @@ select {
 
 </div>
 
+<div class="notify-wrap">
+    <button class="notify-btn" type="button" onclick="toggleNotificationPanel()">🔔 แจ้งเตือน <span id="notifyBadge" class="notify-badge">0</span></button>
+    <div id="notifyPanel" class="notify-panel">
+        <div class="notify-panel-head"><h3>🔔 แจ้งเตือนงาน</h3><button type="button" onclick="toggleNotificationPanel(false)">✕</button></div>
+        <div class="notify-permission"><button type="button" onclick="requestBrowserNotification()">เปิดแจ้งเตือนบนเบราว์เซอร์</button></div>
+        <div id="notifyList" class="notify-empty">กำลังตรวจสอบกำหนดส่ง...</div>
+    </div>
+</div>
 
 
 <!-- ================= PAGE NAVIGATION ================= -->
@@ -2009,21 +2026,34 @@ select {
 </div>
 
 <div id="routinePage" class="app-page">
-  <div class="routine-head">
-    <div><h2>📋 งานประจำ / บันทึกงาน</h2><p>เลือกหัวข้องาน แล้วบันทึกว่าวันไหน เวลาไหน และทำอะไร</p></div>
-    <div class="routine-today" id="routineToday"></div>
-  </div>
-  <div class="routine-grid">
-    <button class="routine-card" data-routine="billing"><div class="routine-icon">🧾</div><div class="routine-info"><h3>วางบิล</h3><p>บันทึกเอกสาร / บริษัท / รายละเอียดการวางบิล</p></div><span class="routine-add">＋</span></button>
-    <button class="routine-card" data-routine="documents"><div class="routine-icon">📄</div><div class="routine-info"><h3>งานเอกสาร</h3><p>บันทึกว่าเอกสารอะไร และดำเนินการเมื่อไหร่</p></div><span class="routine-add">＋</span></button>
-        <button class="routine-card" data-routine="dashboard"><div class="routine-icon">📊</div><div class="routine-info"><h3>Dashboard</h3><p>บันทึกการตรวจสอบ / อัปเดต Dashboard</p></div><span class="routine-add">＋</span></button>
-    <button class="routine-card" data-routine="notes"><div class="routine-icon">📝</div><div class="routine-info"><h3>บันทึก / โน้ต</h3><p>จดสิ่งที่ทำ ข้อมูลสำคัญ หรือสิ่งที่ต้องติดตาม</p></div><span class="routine-add">＋</span></button>
-  </div>
-  <div class="routine-log-panel">
-    <div class="routine-log-head"><div><h3>🗂️ ประวัติการบันทึก</h3><p>เรียงจากวันที่และเวลาล่าสุด</p></div>
-      <select id="routineLogFilter"><option value="all">ทุกหัวข้อ</option><option value="billing">🧾 วางบิล</option><option value="documents">📄 งานเอกสาร</option><option value="dashboard">📊 Dashboard</option><option value="notes">📝 บันทึก / โน้ต</option></select>
+  <div class="routine-page-wrap">
+    <div class="routine-head">
+      <div><h2>📋 งานประจำ / บันทึกงาน</h2><p>เลือกหมวดงานที่ทำ แล้วกด + เพื่อบันทึกอย่างรวดเร็ว</p></div>
+      <div class="routine-today" id="routineToday"></div>
     </div>
-    <div id="routineLogList"></div>
+
+    <div class="routine-tools">
+      <div class="routine-search-wrap"><span class="routine-search-icon">🔎</span><input id="routineCategorySearch" class="routine-search" type="text" placeholder="ค้นหาหมวดงาน เช่น วางบิล, ประชุม, สต๊อก..."></div>
+      <div class="routine-count" id="routineCategoryCount">8 หมวดงาน</div>
+    </div>
+
+    <div class="routine-grid" id="routineCategoryGrid">
+      <button class="routine-card" data-routine="billing"><div class="routine-icon">🧾</div><div class="routine-info"><h3>วางบิล</h3><p>เอกสารวางบิล บริษัท และรายละเอียดที่ต้องติดตาม</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="documents"><div class="routine-icon">📄</div><div class="routine-info"><h3>งานเอกสาร</h3><p>จัดทำ ตรวจสอบ ส่ง หรือแก้ไขเอกสาร</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="dashboard"><div class="routine-icon">📊</div><div class="routine-info"><h3>Dashboard</h3><p>อัปเดตข้อมูล รายงาน และตรวจสอบผล</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="stock"><div class="routine-icon">📦</div><div class="routine-info"><h3>เบิก / สต๊อก</h3><p>เบิกหมึก อุปกรณ์ และตรวจสอบจำนวนคงเหลือ</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="meeting"><div class="routine-icon">👥</div><div class="routine-info"><h3>ประชุม</h3><p>บันทึกประชุม ประเด็น และงานที่ต้องติดตาม</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="coordination"><div class="routine-icon">📞</div><div class="routine-info"><h3>ประสานงาน</h3><p>ติดต่อหน่วยงาน บริษัท หรือผู้ใช้งาน</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="5s"><div class="routine-icon">🧹</div><div class="routine-info"><h3>5ส. / ความเรียบร้อย</h3><p>ตรวจโต๊ะ อุปกรณ์ และพื้นที่ทำงาน</p></div><span class="routine-add">＋</span></button>
+      <button class="routine-card" data-routine="notes"><div class="routine-icon">📝</div><div class="routine-info"><h3>บันทึก / โน้ต</h3><p>จดสิ่งที่ทำ ข้อมูลสำคัญ หรือสิ่งที่ต้องติดตาม</p></div><span class="routine-add">＋</span></button>
+    </div>
+
+    <div class="routine-log-panel">
+      <div class="routine-log-head"><div><h3>🗂️ ประวัติการบันทึก</h3><p>งานล่าสุดจะแสดงอยู่ด้านบน และแก้ไข/ลบได้จากรายการนี้</p></div>
+        <select id="routineLogFilter"><option value="all">ทุกหัวข้อ</option><option value="billing">🧾 วางบิล</option><option value="documents">📄 งานเอกสาร</option><option value="dashboard">📊 Dashboard</option><option value="stock">📦 เบิก / สต๊อก</option><option value="meeting">👥 ประชุม</option><option value="coordination">📞 ประสานงาน</option><option value="5s">🧹 5ส. / ความเรียบร้อย</option><option value="notes">📝 บันทึก / โน้ต</option></select>
+      </div>
+      <div id="routineLogList"></div>
+    </div>
   </div>
 </div>
 <div class="routine-modal" id="routineLogModal">
@@ -2082,9 +2112,7 @@ select {
         <div class="stat-card"><span>📥 รับแล้ว</span><strong id="dashReceived">0</strong></div>
         <div class="stat-card"><span>🔵 กำลังดำเนินการ</span><strong id="dashProcessing">0</strong></div>
         <div class="stat-card"><span>🟡 รอดำเนินการ</span><strong id="dashPending">0</strong></div>
-        <div class="stat-card"><span>✅ เสร็จแล้ว</span><strong id="dashDone">0</strong></div>
         <div class="stat-card done"><span>✅ เสร็จแล้ว</span><strong id="dashDone">0</strong></div>
-        <div class="stat-card pending"><span>⏳ ยังไม่เสร็จ</span><strong id="dashPending">0</strong></div>
     </div>
 
     <div class="dashboard-panel">
@@ -2303,7 +2331,21 @@ let isSaving = false;
 let pendingDeleteId = null;
 let editingTaskId = null;
 let appSettings = { appName: "My Work" };
+try {
+    const savedSettings = JSON.parse(localStorage.getItem("myAppSettings") || "null");
+    if (savedSettings && typeof savedSettings.appName === "string" && savedSettings.appName.trim()) {
+        appSettings.appName = savedSettings.appName.trim();
+    }
+} catch (e) {
+    console.warn("อ่านชื่อแอปจากเครื่องไม่สำเร็จ", e);
+}
 let routineLogs = [];
+try {
+    const savedRoutineLogs = JSON.parse(localStorage.getItem("myRoutineLogs") || "[]");
+    if (Array.isArray(savedRoutineLogs)) routineLogs = savedRoutineLogs;
+} catch (e) {
+    console.warn("อ่านบันทึกงานจากเครื่องไม่สำเร็จ", e);
+}
 
 const thaiMonths = [
     "มกราคม",
@@ -2339,6 +2381,8 @@ function getUserTaskRef() {
 
 function saveLocalData() {
     localStorage.setItem("myTasks", JSON.stringify(tasks));
+    localStorage.setItem("myAppSettings", JSON.stringify(appSettings));
+    localStorage.setItem("myRoutineLogs", JSON.stringify(routineLogs));
 }
 
 /* ================= CONNECTION STATUS ================= */
@@ -2508,21 +2552,26 @@ function parseThaiDate(value) {
     if (!value) return null;
 
     const pattern =
-        /^(\d{2})\/(\d{2})\/(\d{4})(?: (\d{2}):(\d{2}))?$/;
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?$/;
 
-    const match = value.match(pattern);
-
+    const match = String(value).trim().match(pattern);
     if (!match) return null;
 
-    const date = new Date(
-        Number(match[3]),
-        Number(match[2]) - 1,
-        Number(match[1]),
-        Number(match[4] || 0),
-        Number(match[5] || 0)
-    );
+    let day = Number(match[1]);
+    let month = Number(match[2]);
+    let year = Number(match[3]);
+    const hour = Number(match[4] || 0);
+    const minute = Number(match[5] || 0);
 
-    if (Number.isNaN(date.getTime())) return null;
+    // รองรับทั้ง ค.ศ. และ พ.ศ. เช่น 11/09/2569 -> 11/09/2026
+    if (year >= 2400 && year <= 2700) year -= 543;
+
+    if (month < 1 || month > 12 || day < 1 || day > 31 || hour > 23 || minute > 59) return null;
+
+    const date = new Date(year, month - 1, day, hour, minute);
+
+    // ป้องกันวันที่ผิด เช่น 31/02/2026 ไม่ให้กลายเป็นวันที่อื่น
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
 
     return date;
 }
@@ -2563,6 +2612,16 @@ async function loadData() {
          → Anonymous
          → Enable
         */
+        // Wait for Firebase Auth to restore the previous anonymous session first.
+        if (!auth.currentUser) {
+            await new Promise((resolve) => {
+                const unsubscribe = auth.onAuthStateChanged((user) => {
+                    unsubscribe();
+                    resolve(user);
+                });
+            });
+        }
+
         if (!auth.currentUser) {
             await auth.signInAnonymously();
         }
@@ -2581,22 +2640,23 @@ async function loadData() {
         if (doc.exists) {
             const data = doc.data();
 
+            // Firebase is the source of truth for synced tasks.
             if (Array.isArray(data.tasks)) {
                 tasks = data.tasks;
-                saveLocalData();
-            } else {
-                tasks = [];
-                saveLocalData();
             }
 
-            routineLogs = Array.isArray(data.routineLogs) ? data.routineLogs : JSON.parse(localStorage.getItem("myRoutineLogs") || "[]");
-            localStorage.setItem("myRoutineLogs", JSON.stringify(routineLogs));
-            renderRoutineLogs();
+            // Keep existing local routine logs if the Firebase field has not been created yet.
+            if (Array.isArray(data.routineLogs)) {
+                routineLogs = data.routineLogs;
+            }
 
             if (data.settings && typeof data.settings.appName === "string" && data.settings.appName.trim()) {
                 appSettings.appName = data.settings.appName.trim();
-                applyAppTitle();
             }
+
+            saveLocalData();
+            applyAppTitle();
+            renderRoutineLogs();
         } else {
             /*
              ถ้ายังไม่มีข้อมูลของผู้ใช้นี้
@@ -2604,6 +2664,7 @@ async function loadData() {
             */
             await ref.set({
                 tasks: tasks,
+                routineLogs: routineLogs,
                 settings: appSettings,
                 updatedAt:
                     firebase.firestore.FieldValue.serverTimestamp()
@@ -2657,59 +2718,38 @@ async function loadData() {
 
 /* ================= FIREBASE SAVE ================= */
 
-async function saveData() {
-    saveLocalData();
+let firebaseSaveQueue = Promise.resolve();
 
-    if (!firebaseReady || !currentUser) {
-        return true;
-    }
-
-    if (isSaving) {
-        return false;
-    }
-
-    isSaving = true;
-
+async function writeFirebaseSnapshot() {
     try {
         await getUserTaskRef().set({
             tasks: tasks,
+            routineLogs: routineLogs,
             settings: appSettings,
-            updatedAt:
-                firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        setConnectionStatus(
-            "✓ บันทึก Firebase แล้ว",
-            "success"
-        );
-
-        console.log(
-            "บันทึกข้อมูลลง Firebase สำเร็จ"
-        );
-
+        setConnectionStatus("✓ บันทึก Firebase แล้ว", "success");
         return true;
-
     } catch (error) {
-        console.error(
-            "บันทึก Firebase ไม่สำเร็จ:",
-            error
-        );
-
-        setConnectionStatus(
-            "⚠ บันทึก Firebase ไม่สำเร็จ",
-            "error"
-        );
-
-        alert(
-            "บันทึกข้อมูลลง Firebase ไม่สำเร็จ\n\n" +
-            error.message
-        );
-
+        console.error("บันทึก Firebase ไม่สำเร็จ:", error);
+        setConnectionStatus("⚠ บันทึก Firebase ไม่สำเร็จ", "error");
+        alert("บันทึกข้อมูลลง Firebase ไม่สำเร็จ\n\n" + error.message);
         return false;
-
-    } finally {
-        isSaving = false;
     }
+}
+
+function saveData() {
+    saveLocalData();
+
+    if (!firebaseReady || !currentUser) {
+        return Promise.resolve(true);
+    }
+
+    // ทุกการเขียน Firebase ต่อคิวกัน เพื่อป้องกันข้อมูลจากการกดเร็ว ๆ เขียนทับกัน
+    const write = firebaseSaveQueue.then(() => writeFirebaseSnapshot());
+    firebaseSaveQueue = write.catch(() => false);
+    return write;
 }
 
 /* ================= ADD TASK ================= */
@@ -2746,7 +2786,7 @@ async function saveTask() {
     }
 
     const task = {
-        id: Date.now(),
+        id: Date.now() + Math.floor(Math.random() * 1000),
         name,
         detail,
         deadline,
@@ -2762,6 +2802,7 @@ async function saveTask() {
         renderTasks();
         renderMonthSummary();
         updateSummary();
+        refreshSecondaryViews();
 
         // ปิดหน้าต่างทันทีเมื่อบันทึกในเครื่องสำเร็จ
         if (nameEl) nameEl.value = "";
@@ -2792,6 +2833,12 @@ async function saveTask() {
             button.textContent = "บันทึกงาน";
         }
     }
+}
+
+function refreshSecondaryViews(){
+    try { if (typeof renderDash === "function" && document.getElementById("dashboardPage")) renderDash(); } catch(e) { console.warn("Dashboard refresh failed", e); }
+    try { if (typeof renderAllTasksPage === "function" && document.getElementById("allTasksPage")) renderAllTasksPage(); } catch(e) { console.warn("All tasks refresh failed", e); }
+    try { if (typeof setupAnnualPlannerSafe === "function" && document.getElementById("yearOverviewPage")) setupAnnualPlannerSafe(); } catch(e) { console.warn("Annual view refresh failed", e); }
 }
 
 /* ================= RENDER TASKS ================= */
@@ -3226,6 +3273,7 @@ async function toggleStatus(id) {
 
     renderTasks();
     renderMonthSummary();
+    refreshSecondaryViews();
 
     const ok = await saveData();
 
@@ -3270,19 +3318,15 @@ async function saveAppTitle(){
     }
     const old = appSettings.appName;
     appSettings.appName = value;
+    saveLocalData();
     applyAppTitle();
 
     if(firebaseReady && currentUser){
-        try{
-            await getUserTaskRef().set({
-                settings: { appName: value },
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge:true });
-            setConnectionStatus("✓ เปลี่ยนชื่อแอปแล้ว","success");
-        }catch(error){
+        const ok = await saveData();
+        if(!ok){
             appSettings.appName = old;
+            saveLocalData();
             applyAppTitle();
-            alert("บันทึกชื่อแอปไม่สำเร็จ\n\n"+error.message);
             return;
         }
     }
@@ -3310,6 +3354,7 @@ async function saveEditedTask(){
     if(!task) return;
     const name = document.getElementById("editTaskName").value.trim();
     const detail = document.getElementById("editTaskDetail").value.trim();
+    const priority = document.getElementById("editTaskPriority").value || "normal";
     const deadline = document.getElementById("editTaskDeadline").value.trim();
 
     if(!name){ alert("กรุณาใส่ชื่องาน"); return; }
@@ -3321,6 +3366,7 @@ async function saveEditedTask(){
     const old = {...task};
     task.name = name;
     task.detail = detail;
+    task.priority = priority;
     task.deadline = deadline;
 
     const ok = await saveData();
@@ -3330,7 +3376,7 @@ async function saveEditedTask(){
         return;
     }
     closeEditTask();
-    renderTasks(); renderMonthSummary(); updateSummary();
+    renderTasks(); renderMonthSummary(); updateSummary(); refreshSecondaryViews();
 }
 
 /* ================= DELETE ================= */
@@ -3360,6 +3406,7 @@ async function confirmDelete(){
     renderTasks();
     renderMonthSummary();
     updateSummary();
+    refreshSecondaryViews();
 
     const ok = await saveData();
 
@@ -3694,18 +3741,25 @@ function renderAllTasksPage(){
 
 
 /* ================= ROUTINE WORK LOG JS ================= */
-const routineCategories={billing:{title:"🧾 วางบิล",sub:"บันทึกเอกสารวางบิล",placeholder:"เช่น วางบิลค่าอุปกรณ์ IT บริษัท ABC"},documents:{title:"📄 งานเอกสาร",sub:"บันทึกงานเอกสาร",placeholder:"เช่น จัดทำเอกสาร PR"},support:{title:"🎫 งาน IT / เคส Support",sub:"บันทึกเคสและการแก้ไข",placeholder:"เช่น แก้ไข Printer ห้องบัญชี"},dashboard:{title:"📊 Dashboard",sub:"บันทึกการอัปเดต Dashboard",placeholder:"เช่น อัปเดต Dashboard ประจำวัน"},notes:{title:"📝 บันทึก / โน้ต",sub:"บันทึกข้อมูลหรือสิ่งที่ต้องติดตาม",placeholder:"เช่น พรุ่งนี้ติดตามเอกสาร..."}};
-function routineLogDateTime(x){return new Date(`${x.date||"1970-01-01"}T${x.time||"00:00"}`)}
-function loadRoutineLogsFromData(data){routineLogs=Array.isArray(data.routineLogs)?data.routineLogs:[];renderRoutineLogs()}
-function saveRoutineLogs(){
-    localStorage.setItem("myRoutineLogs", JSON.stringify(routineLogs));
-    if(!firebaseReady || !currentUser){
-        setConnectionStatus("บันทึกในเครื่องแล้ว (รอ Firebase)","success");
-        return true;
+const routineCategories={billing:{title:"🧾 วางบิล",sub:"บันทึกเอกสารวางบิล",placeholder:"เช่น วางบิลค่าอุปกรณ์ IT บริษัท ABC"},documents:{title:"📄 งานเอกสาร",sub:"บันทึกงานเอกสาร",placeholder:"เช่น จัดทำเอกสาร PR"},support:{title:"🎫 งาน IT / เคส Support",sub:"บันทึกเคสและการแก้ไข",placeholder:"เช่น แก้ไข Printer ห้องบัญชี"},dashboard:{title:"📊 Dashboard",sub:"บันทึกการอัปเดต Dashboard",placeholder:"เช่น อัปเดต Dashboard ประจำวัน"},equipment:{title:"🖨️ อุปกรณ์ / Printer",sub:"บันทึกงานเกี่ยวกับอุปกรณ์",placeholder:"เช่น ติดตั้ง Printer ห้องบัญชี"},stock:{title:"📦 เบิก / สต๊อก",sub:"บันทึกการเบิกและตรวจสอบสต๊อก",placeholder:"เช่น เบิกหมึก Printer"},meeting:{title:"👥 ประชุม",sub:"บันทึกการประชุมและประเด็นติดตาม",placeholder:"เช่น ประชุม IT ประจำสัปดาห์"},coordination:{title:"📞 ประสานงาน",sub:"บันทึกการติดต่อและติดตามงาน",placeholder:"เช่น ประสานงานฝ่ายจัดซื้อ"},system:{title:"🖥️ ตรวจสอบระบบ",sub:"บันทึกการตรวจสอบระบบ IT",placeholder:"เช่น ตรวจสอบ Network / Email"},"5s":{title:"🧹 5ส. / ความเรียบร้อย",sub:"บันทึกการตรวจ 5ส.",placeholder:"เช่น ตรวจโต๊ะทำงานแผนก IT"},email:{title:"📧 Email",sub:"บันทึกงานเกี่ยวกับ Email",placeholder:"เช่น แก้ไข Email หมดอายุ"},notes:{title:"📝 บันทึก / โน้ต",sub:"บันทึกข้อมูลหรือสิ่งที่ต้องติดตาม",placeholder:"เช่น พรุ่งนี้ติดตามเอกสาร..."}};
+function routineLogDateTime(x){
+    const raw=String(x.date||"").trim();
+    if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(raw)){
+        const parts=raw.split("-").map(Number);
+        let year=parts[0];
+        if(year>=2400&&year<=2700) year-=543;
+        return new Date(year,parts[1]-1,parts[2],...(String(x.time||"00:00").split(":").map(Number)));
     }
-    return getUserTaskRef().set({routineLogs,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
-        .then(()=>{setConnectionStatus("✓ บันทึก Firebase แล้ว","success");return true;})
-        .catch(err=>{setConnectionStatus("⚠ บันทึกไม่สำเร็จ","error");alert("บันทึกข้อมูลไม่สำเร็จ\n\n"+err.message);return false;});
+    return parseThaiDate(raw)||new Date(`${raw||"1970-01-01"}T${x.time||"00:00"}`);
+}
+function loadRoutineLogsFromData(data){routineLogs=Array.isArray(data.routineLogs)?data.routineLogs:[];renderRoutineLogs()}
+async function saveRoutineLogs(){
+    saveLocalData();
+    const ok = await saveData();
+    if (!ok && firebaseReady) {
+        setConnectionStatus("⚠ บันทึกในเครื่องแล้ว แต่ Firebase ยังไม่ซิงก์", "error");
+    }
+    return ok;
 }
 function openRoutineLogModal(category,editId=""){const m=document.getElementById("routineLogModal"),c=routineCategories[category]||routineCategories.notes,x=editId?routineLogs.find(a=>a.id===editId):null;document.getElementById("routineCategory").value=category;document.getElementById("routineEditId").value=x?x.id:"";document.getElementById("routineModalTitle").textContent=x?"✏️ แก้ไข "+c.title:c.title;document.getElementById("routineModalSub").textContent=c.sub;document.getElementById("routineLogDate").value=x?.date||new Date().toISOString().slice(0,10);document.getElementById("routineLogTime").value=x?.time||new Date().toTimeString().slice(0,5);document.getElementById("routineLogStatus").value=x?.status||"pending";document.getElementById("routineLogDetail").value=x?.detail||x?.subject||"";m.classList.add("show");hideRoutineTimeSuggestions();hideRoutineDetailSuggestions();}
 function closeRoutineLogModal(){document.getElementById("routineLogModal").classList.remove("show")}
@@ -3831,7 +3885,22 @@ async function saveRoutineLog(){
 }
 let routineDeleteId="";
 function deleteRoutineLog(id){const x=routineLogs.find(a=>a.id===id);if(!x)return;routineDeleteId=id;const m=document.getElementById("routineDeleteModal"),t=document.getElementById("routineDeleteText");if(t)t.textContent=`“${x.detail||x.subject||"บันทึกงานนี้"}” จะถูกลบออกจากรายการ`;m?.classList.add("show")}
-async function confirmDeleteRoutineLog(){const id=routineDeleteId;if(!id)return;routineDeleteId="";const m=document.getElementById("routineDeleteModal");m?.classList.remove("show");routineLogs=routineLogs.filter(a=>a.id!==id);renderRoutineLogs();await saveRoutineLogs()}
+async function confirmDeleteRoutineLog(){
+    const id=routineDeleteId;
+    if(!id)return;
+    const oldLogs=[...routineLogs];
+    routineDeleteId="";
+    const m=document.getElementById("routineDeleteModal");
+    m?.classList.remove("show");
+    routineLogs=routineLogs.filter(a=>a.id!==id);
+    renderRoutineLogs();
+    const ok=await saveRoutineLogs();
+    if(!ok && firebaseReady){
+        routineLogs=oldLogs;
+        saveLocalData();
+        renderRoutineLogs();
+    }
+}
 function cancelDeleteRoutineLog(){routineDeleteId="";document.getElementById("routineDeleteModal")?.classList.remove("show")}
 function updateRoutineStatusSummary(){
     const counts={urgent:0,normal:0,received:0,processing:0,pending:0,done:0};
@@ -3839,8 +3908,85 @@ function updateRoutineStatusSummary(){
     const map={dashUrgent:"urgent",dashNormal:"normal",dashReceived:"received",dashProcessing:"processing",dashPending:"pending",dashDone:"done"};
     Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=counts[key]||0;});
 }
-function renderRoutineLogs(){const list=document.getElementById("routineLogList");if(!list)return;const filter=document.getElementById("routineLogFilter")?.value||"all",icons={billing:"🧾",documents:"📄",support:"🎫",dashboard:"📊",notes:"📝"},statusMap={received:{text:"รับแล้ว / อยู่กับเรา",cls:"routine-status-received",icon:"📥"},processing:{text:"กำลังดำเนินการ",cls:"routine-status-processing",icon:"🔵"},urgent:{text:"ด่วน",cls:"routine-status-urgent",icon:"🔴"},normal:{text:"ไม่ด่วน",cls:"routine-status-normal",icon:"🟢"},pending:{text:"รอดำเนินการ",cls:"routine-status-pending",icon:"🟡"},done:{text:"เสร็จแล้ว",cls:"routine-status-done",icon:"✅"}};const data=routineLogs.filter(x=>filter==="all"||x.category===filter).sort((a,b)=>routineLogDateTime(b)-routineLogDateTime(a));if(!data.length){list.innerHTML='<div class="routine-empty">ยังไม่มีบันทึก<br>กดหัวข้อด้านบนเพื่อเพิ่มงาน</div>';updateRoutineStatusSummary();return}list.innerHTML=data.map(x=>{const c=routineCategories[x.category]||routineCategories.notes,d=x.date?x.date.split("-").reverse().join("/"):"-",st=statusMap[x.status]||statusMap.pending,title=x.detail||x.subject||"ไม่มีรายละเอียด";return `<div class="routine-log-item"><div class="routine-log-badge">${icons[x.category]||"📝"}</div><div class="routine-log-content"><div class="routine-log-title">${escapeHtml(title)} <span class="routine-status-badge ${st.cls}">${st.icon} ${st.text}</span></div><div class="routine-log-meta">${c.title} · 📅 ${d} · 🕐 ${x.time||"-"}</div></div><div class="routine-log-actions"><button onclick="openRoutineLogModal('${x.category}','${x.id}')">✏️</button><button class="delete-log" onclick="deleteRoutineLog('${x.id}')">🗑️</button></div></div>`}).join("");updateRoutineStatusSummary()}
-function setupRoutineWorkLog(){document.querySelectorAll(".routine-card").forEach(x=>x.addEventListener("click",()=>openRoutineLogModal(x.dataset.routine)));document.getElementById("routineModalClose")?.addEventListener("click",closeRoutineLogModal);document.getElementById("routineModalCancel")?.addEventListener("click",closeRoutineLogModal);document.getElementById("routineLogFilter")?.addEventListener("change",renderRoutineLogs);document.getElementById("routineDeleteCancel")?.addEventListener("click",cancelDeleteRoutineLog);document.getElementById("routineDeleteConfirm")?.addEventListener("click",confirmDeleteRoutineLog);document.getElementById("routineDeleteModal")?.addEventListener("click",e=>{if(e.target.id==="routineDeleteModal")cancelDeleteRoutineLog()});document.getElementById("routineLogModal")?.addEventListener("click",e=>{if(e.target.id==="routineLogModal")closeRoutineLogModal()});const t=document.getElementById("routineToday");if(t){const d=new Date();t.textContent="วันนี้ "+d.toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"})}renderRoutineLogs()}
+function renderRoutineLogs(){const list=document.getElementById("routineLogList");if(!list)return;const filter=document.getElementById("routineLogFilter")?.value||"all",icons={billing:"🧾",documents:"📄",support:"🎫",dashboard:"📊",equipment:"🖨️",stock:"📦",meeting:"👥",coordination:"📞",system:"🖥️","5s":"🧹",email:"📧",notes:"📝"},statusMap={received:{text:"รับแล้ว / อยู่กับเรา",cls:"routine-status-received",icon:"📥"},processing:{text:"กำลังดำเนินการ",cls:"routine-status-processing",icon:"🔵"},urgent:{text:"ด่วน",cls:"routine-status-urgent",icon:"🔴"},normal:{text:"ไม่ด่วน",cls:"routine-status-normal",icon:"🟢"},pending:{text:"รอดำเนินการ",cls:"routine-status-pending",icon:"🟡"},done:{text:"เสร็จแล้ว",cls:"routine-status-done",icon:"✅"}};const data=routineLogs.filter(x=>filter==="all"||x.category===filter).sort((a,b)=>routineLogDateTime(b)-routineLogDateTime(a));if(!data.length){list.innerHTML='<div class="routine-empty">ยังไม่มีบันทึก<br>กดหัวข้อด้านบนเพื่อเพิ่มงาน</div>';updateRoutineStatusSummary();return}list.innerHTML=data.map(x=>{const c=routineCategories[x.category]||routineCategories.notes,d=x.date?x.date.split("-").reverse().join("/"):"-",st=statusMap[x.status]||statusMap.pending,title=x.detail||x.subject||"ไม่มีรายละเอียด";return `<div class="routine-log-item"><div class="routine-log-badge">${icons[x.category]||"📝"}</div><div class="routine-log-content"><div class="routine-log-title">${escapeHtml(title)} <span class="routine-status-badge ${st.cls}">${st.icon} ${st.text}</span></div><div class="routine-log-meta">${c.title} · 📅 ${d} · 🕐 ${x.time||"-"}</div></div><div class="routine-log-actions"><button onclick="openRoutineLogModal('${x.category}','${x.id}')">✏️</button><button class="delete-log" onclick="deleteRoutineLog('${x.id}')">🗑️</button></div></div>`}).join("");updateRoutineStatusSummary()}
+function setupRoutineWorkLog(){
+    document.querySelectorAll(".routine-card").forEach(x=>x.addEventListener("click",()=>openRoutineLogModal(x.dataset.routine)));
+    document.getElementById("routineModalClose")?.addEventListener("click",closeRoutineLogModal);
+    document.getElementById("routineModalCancel")?.addEventListener("click",closeRoutineLogModal);
+    document.getElementById("routineLogFilter")?.addEventListener("change",renderRoutineLogs);
+    document.getElementById("routineDeleteCancel")?.addEventListener("click",cancelDeleteRoutineLog);
+    document.getElementById("routineDeleteConfirm")?.addEventListener("click",confirmDeleteRoutineLog);
+    document.getElementById("routineDeleteModal")?.addEventListener("click",e=>{if(e.target.id==="routineDeleteModal")cancelDeleteRoutineLog()});
+    document.getElementById("routineLogModal")?.addEventListener("click",e=>{if(e.target.id==="routineLogModal")closeRoutineLogModal()});
+    const t=document.getElementById("routineToday");
+    if(t){const d=new Date();t.textContent="วันนี้ "+d.toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"})}
+    const search=document.getElementById("routineCategorySearch");
+    const count=document.getElementById("routineCategoryCount");
+    const cards=[...document.querySelectorAll(".routine-card")];
+    const filterCards=()=>{
+        const q=String(search?.value||"").trim().toLowerCase();
+        let visible=0;
+        cards.forEach(card=>{
+            const text=card.innerText.toLowerCase();
+            const show=!q||text.includes(q);
+            card.classList.toggle("is-hidden",!show);
+            if(show)visible++;
+        });
+        if(count)count.textContent=`${visible} หมวดงาน`;
+    };
+    search?.addEventListener("input",filterCards);
+    filterCards();
+    renderRoutineLogs();
+}
+
+/* ================= TASK NOTIFICATIONS ================= */
+let lastBrowserNoticeKey="";
+function taskDeadlineDate(t){
+    const raw=String(t.deadline||t.dueDate||"").trim();
+    if(!raw)return null;
+
+    // รองรับวันที่ที่บันทึกไว้ทั้ง ค.ศ. และ พ.ศ.
+    const thaiDate=parseThaiDate(raw);
+    if(thaiDate){
+        // ถ้าไม่ได้ระบุเวลา ให้ถือว่าสิ้นวัน
+        if(!/\d{1,2}:\d{2}/.test(raw)) thaiDate.setHours(23,59,59,999);
+        return thaiDate;
+    }
+
+    const d=new Date(raw);
+    return Number.isNaN(d.getTime())?null:d;
+}
+function getTaskNotifications(){
+    const now=new Date();
+    return tasks.map(t=>({task:t,date:taskDeadlineDate(t)})).filter(x=>x.date).sort((a,b)=>a.date-b.date).filter(x=>x.task.status!=="done");
+}
+function renderNotifications(){
+    const list=document.getElementById("notifyList"),badge=document.getElementById("notifyBadge");if(!list)return;
+    const now=new Date(), items=getTaskNotifications();
+    const active=items.filter(x=>x.date.getTime()>=now.getTime()-86400000);
+    if(badge){badge.textContent=active.length;badge.classList.toggle("show",active.length>0)}
+    if(!active.length){list.innerHTML='<div class="notify-empty">ไม่มีงานที่ต้องแจ้งเตือน 🎉</div>';return;}
+    list.innerHTML=active.slice(0,12).map(x=>{const diff=x.date-now, overdue=diff<0, mins=Math.round(Math.abs(diff)/60000), when=overdue?`เลยกำหนด ${Math.floor(mins/1440)} วัน`:(mins<60?`อีก ${mins} นาที`:(mins<1440?`อีก ${Math.floor(mins/60)} ชั่วโมง`:`อีก ${Math.floor(mins/1440)} วัน`));return `<div class="notify-item"><strong>${escapeHtml(x.task.name||x.task.title||"ไม่มีชื่องาน")}</strong><span class="${overdue?'notify-overdue':'notify-soon'}">${overdue?'🔴 ': '⏰ '}${when} · ${x.date.toLocaleString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span></div>`}).join("");
+}
+function toggleNotificationPanel(force){const p=document.getElementById("notifyPanel");if(!p)return;p.classList.toggle("show",force===undefined?!p.classList.contains("show"):force);if(p.classList.contains("show"))renderNotifications()}
+async function requestBrowserNotification(){
+    if(!('Notification' in window)){alert('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือน');return;}
+    const permission=await Notification.requestPermission();
+    if(permission==='granted'){alert('เปิดการแจ้งเตือนแล้ว 🔔');checkTaskNotifications(true)}
+    else alert('ยังไม่ได้อนุญาตการแจ้งเตือน');
+}
+function checkTaskNotifications(force=false){
+    renderNotifications();
+    if(!('Notification' in window)||Notification.permission!=='granted')return;
+    const now=new Date();
+    const soon=tasks.map(t=>({task:t,date:taskDeadlineDate(t)})).filter(x=>x.date&&x.task.status!=="done").find(x=>{const diff=x.date-now;return diff>=-60000&&diff<=15*60000});
+    if(!soon)return;
+    const key=`${soon.task.id||soon.task.name}|${soon.date.getTime()}`;
+    if(!force&&key===lastBrowserNoticeKey)return;
+    lastBrowserNoticeKey=key;
+    new Notification('⏰ ถึงเวลางาน My Work',{body:`${soon.task.name||soon.task.title||'มีงานที่ต้องทำ'}\nกำหนด ${soon.date.toLocaleString('th-TH',{hour:'2-digit',minute:'2-digit'})}`});
+}
+setInterval(()=>checkTaskNotifications(false),60000);
 
 /* ================= STABLE MULTI-PAGE RUNTIME ================= */
 
