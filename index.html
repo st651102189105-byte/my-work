@@ -1681,6 +1681,7 @@ select {
             class="today-day"
             id="todayDay">
         </div>
+        <div id="todayBuddhistYear" style="font-size:12px;color:#858397;margin-top:4px"></div>
 
     </div>
 
@@ -1703,6 +1704,43 @@ select {
         <button class="page-nav-btn" data-page="routinePage">📋 งานประจำ</button>
     <button class="page-nav-btn" data-page="calendarPage">📅 ปฏิทิน</button>
     <button class="page-nav-btn" data-page="allTasksPage">📋 งานทั้งหมด</button>
+    <button class="page-nav-btn" data-page="busyPage">⚡ โหมดงานยุ่ง</button>
+    <button class="page-nav-btn" data-page="proceduresPage">📚 คู่มือการทำงาน</button>
+</div>
+
+<!-- ================= BUSY MODE ================= -->
+<div id="busyPage" class="app-page">
+  <section style="background:#fff;padding:22px;border:1px solid #eeeaf9;border-radius:18px;margin-bottom:18px">
+    <h2 style="margin-bottom:6px">⚡ โหมดงานยุ่ง</h2>
+    <p style="color:#858397;margin-bottom:14px">จดให้ทันก่อน ค่อยจัดรายละเอียดทีหลัง — หนึ่งบรรทัดต่อหนึ่งงาน</p>
+    <textarea id="busyQuickInput" rows="4" placeholder="ตัวอย่าง:
+ตรวจเอกสารวางบิล | วันนี้
+Memo Software | รอเอกสาร
+โทรกลับฝ่ายบัญชี" style="width:100%;padding:13px;border:1px solid #ddd7ef;border-radius:12px;font:inherit;resize:vertical"></textarea>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px">
+      <small style="color:#858397">ใส่กำหนดส่งต่อท้ายด้วย | เช่น งานประชุม | 28/09/2026 17:00 (ไม่บังคับ)</small>
+      <button type="button" onclick="addBusyTasks()" style="margin-left:auto;background:#6845df;color:white;border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer">＋ เพิ่มงานด่วน</button>
+    </div>
+  </section>
+  <section style="background:#fff;padding:20px;border:1px solid #eeeaf9;border-radius:18px">
+    <h3 style="margin-bottom:12px">📝 งานที่ยังไม่เสร็จ</h3><div id="busyTaskList"></div>
+  </section>
+</div>
+
+<!-- ================= WORK PROCEDURES ================= -->
+<div id="proceduresPage" class="app-page">
+  <section style="background:#fff;padding:22px;border:1px solid #eeeaf9;border-radius:18px;margin-bottom:18px">
+    <h2 style="margin-bottom:6px">📚 คู่มือขั้นตอนการทำงาน</h2>
+    <p style="color:#858397;margin-bottom:16px">เก็บขั้นตอนงานเอกสารไว้เปิดทบทวนได้ ไม่ต้องจำทั้งหมด</p>
+    <input id="procedureTitle" type="text" maxlength="120" placeholder="ชื่องาน เช่น งานวางบิล" style="width:100%;padding:12px;border:1px solid #ddd7ef;border-radius:10px;margin-bottom:10px;font:inherit">
+    <input id="procedureCategory" type="text" maxlength="80" placeholder="หมวดหมู่ เช่น งานเอกสาร (ไม่บังคับ)" style="width:100%;padding:12px;border:1px solid #ddd7ef;border-radius:10px;margin-bottom:10px;font:inherit">
+    <textarea id="procedureSteps" rows="5" placeholder="ขั้นตอนการทำงาน — พิมพ์หนึ่งขั้นตอนต่อหนึ่งบรรทัด" style="width:100%;padding:12px;border:1px solid #ddd7ef;border-radius:10px;margin-bottom:10px;font:inherit;resize:vertical"></textarea>
+    <textarea id="procedureNotes" rows="2" placeholder="เอกสารที่ต้องใช้ / ผู้ที่ต้องประสานงาน / ข้อควรระวัง (ไม่บังคับ)" style="width:100%;padding:12px;border:1px solid #ddd7ef;border-radius:10px;margin-bottom:10px;font:inherit;resize:vertical"></textarea>
+    <input id="procedureEditId" type="hidden">
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" onclick="saveProcedure()" style="background:#6845df;color:white;border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer">บันทึกคู่มือ</button><button type="button" onclick="clearProcedureForm()" style="background:#f1eff8;color:#51466c;border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer">ล้างแบบฟอร์ม</button></div>
+  </section>
+  <input id="procedureSearch" type="search" placeholder="🔎 ค้นหาชื่อคู่มือหรือหมวดหมู่..." oninput="renderProcedures()" style="width:100%;padding:12px;border:1px solid #ddd7ef;border-radius:10px;margin-bottom:14px;font:inherit">
+  <div id="procedureList"></div>
 </div>
 
 <div id="calendarPage" class="app-page active-page">
@@ -2032,6 +2070,14 @@ select {
       <div class="routine-today" id="routineToday"></div>
     </div>
 
+    <section style="background:#fff;border:1px solid #eeeaf9;border-radius:16px;padding:16px;margin-bottom:16px">
+      <h3 style="margin-bottom:10px">＋ เพิ่มหัวข้องานเอง</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="customRoutineName" type="text" maxlength="60" placeholder="ชื่อหัวข้องาน เช่น ตรวจเช็ก Notebook" style="flex:1;min-width:180px;padding:11px;border:1px solid #ddd7ef;border-radius:10px;font:inherit">
+        <input id="customRoutineIcon" type="text" maxlength="4" placeholder="ไอคอน เช่น 📌" style="width:100px;padding:11px;border:1px solid #ddd7ef;border-radius:10px;font:inherit">
+        <button type="button" onclick="addCustomRoutineCategory()" style="background:#6845df;color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:700">เพิ่มหัวข้อ</button>
+      </div><small style="display:block;color:#858397;margin-top:8px">หัวข้อที่เพิ่มจะเก็บไว้ในเบราว์เซอร์เครื่องนี้ โดยไม่แก้ข้อมูลบันทึกงานเดิม</small>
+    </section>
     <div class="routine-tools">
       <div class="routine-search-wrap"><span class="routine-search-icon">🔎</span><input id="routineCategorySearch" class="routine-search" type="text" placeholder="ค้นหาหมวดงาน เช่น วางบิล, ประชุม, สต๊อก..."></div>
       <div class="routine-count" id="routineCategoryCount">8 หมวดงาน</div>
@@ -2075,7 +2121,8 @@ select {
       <option value="done">✅ เสร็จแล้ว</option>
       <option value="normal">🟢 ไม่ด่วน</option>
     </select>
-    <label>รายละเอียดงาน</label><div class="routine-detail-wrap"><textarea id="routineLogDetail" rows="4" placeholder="เช่น แก้ไข Printer ห้องบัญชี / วางบิลบริษัท ABC / จัดทำเอกสาร PR"></textarea><div id="routineDetailSuggestions" class="routine-detail-suggestions"></div></div>
+    <label>หัวข้องาน</label><input type="text" id="routineLogSubject" placeholder="เช่น ตรวจเช็ค Notebook / จัดทำเอกสาร PR" maxlength="180">
+    <label>เลือกหัวข้องานจากเดือนก่อน (ไม่ต้องพิมพ์ใหม่)</label><select id="previousMonthTopic"><option value="">— เลือกหัวข้องาน —</option></select><label>รายละเอียดงาน</label><div class="routine-detail-wrap"><textarea id="routineLogDetail" rows="4" placeholder="ระบุรายละเอียดเพิ่มเติมของงาน"></textarea><div id="routineDetailSuggestions" class="routine-detail-suggestions"></div></div>
     <div class="routine-modal-actions"><button type="button" class="routine-cancel" id="routineModalCancel">ยกเลิก</button><button type="button" class="routine-save" id="routineModalSave" onclick="saveRoutineLog()">💾 บันทึก</button></div>
   </div>
 </div>
@@ -2091,6 +2138,23 @@ select {
   </div>
 </div>
 <div id="dashboardPage" class="app-page">
+    <!-- Quick home panel: fast capture + at-a-glance workload -->
+    <section style="background:#fff;border:1px solid #eeeaf9;border-radius:20px;padding:20px;margin-bottom:18px;box-shadow:0 5px 25px rgba(40,30,80,.05)">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <div><h2 style="margin:0 0 4px">👋 งานของฉันวันนี้</h2><p style="margin:0;color:#858397">จดงานได้ทันที แล้วค่อยเติมรายละเอียดภายหลัง</p></div>
+        <button type="button" onclick="document.getElementById('homeQuickName').focus()" style="border:0;border-radius:10px;padding:10px 15px;background:#6845df;color:#fff;font-weight:700;cursor:pointer">＋ เพิ่มงานด่วน</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="homeQuickName" type="text" maxlength="180" placeholder="พิมพ์ชื่องานที่ต้องทำ..." style="flex:1;min-width:180px;padding:12px;border:1px solid #ddd7ef;border-radius:10px;font:inherit" onkeydown="if(event.key==='Enter')addDashboardQuickTask()">
+        <input id="homeQuickDeadline" type="text" placeholder="กำหนดส่ง (ไม่บังคับ) เช่น วันนี้" style="flex:1;min-width:160px;padding:12px;border:1px solid #ddd7ef;border-radius:10px;font:inherit" onkeydown="if(event.key==='Enter')addDashboardQuickTask()">
+        <button type="button" onclick="addDashboardQuickTask()" style="border:0;border-radius:10px;padding:12px 18px;background:#6845df;color:#fff;font-weight:700;cursor:pointer">บันทึกงาน</button>
+      </div>
+      <div id="homeWorkStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:16px"></div>
+    </section>
+    <section style="background:#fff;border:1px solid #eeeaf9;border-radius:20px;padding:20px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3 style="margin:0">🧭 สิ่งที่ควรจัดการ</h3><button type="button" onclick="document.querySelector('[data-page=\"allTasksPage\"]').click()" style="border:0;border-radius:9px;padding:8px 12px;background:#f1eff8;cursor:pointer">ดูงานทั้งหมด →</button></div>
+      <div id="homePriorityList" style="margin-top:10px"></div>
+    </section>
 
     
 
@@ -2100,7 +2164,11 @@ select {
             <p>เลือกเดือนเพื่อดูว่าวันไหนทำงานอะไรบ้าง</p>
         </div>
         <div class="dashboard-filter-row">
-            <select id="dashboardYear"></select>
+            <select id="dashboardYearFormat" aria-label="รูปแบบปี" title="เลือกรูปแบบปี">
+                <option value="BE">พ.ศ.</option>
+                <option value="CE">ค.ศ.</option>
+            </select>
+            <select id="dashboardYear" aria-label="เลือกปี"></select>
             <select id="dashboardMonth"></select>
         </div>
     </div>
@@ -2446,12 +2514,12 @@ for (
 ) {
     const option = document.createElement("option");
     option.value = year;
-    option.textContent = year;
+    option.textContent = (year + 543) + " พ.ศ.";
     yearSelect.appendChild(option);
 
     const option2 = document.createElement("option");
     option2.value = year;
-    option2.textContent = year;
+    option2.textContent = (year + 543) + " พ.ศ.";
     summaryYearSelect.appendChild(option2);
 }
 
@@ -2640,9 +2708,15 @@ async function loadData() {
         if (doc.exists) {
             const data = doc.data();
 
-            // Firebase is the source of truth for synced tasks.
+            // Preserve locally available tasks if this Firebase document unexpectedly
+            // contains an empty task array. This avoids making a populated local app
+            // appear empty or replacing its in-memory data during initial loading.
             if (Array.isArray(data.tasks)) {
-                tasks = data.tasks;
+                if (data.tasks.length > 0 || tasks.length === 0) {
+                    tasks = data.tasks;
+                } else {
+                    console.warn("Firebase returned an empty task list; preserving local tasks.");
+                }
             }
 
             // Keep existing local routine logs if the Firebase field has not been created yet.
@@ -3689,11 +3763,19 @@ function thaiDate(d){
 
 function populateDash(){
     const y=document.getElementById("dashboardYear"),m=document.getElementById("dashboardMonth");
+    const format=document.getElementById("dashboardYearFormat");
     if(!y||!m)return;
     const years=[...new Set(tasks.map(taskDateObj).filter(Boolean).map(d=>d.getFullYear()))];
     const now=new Date(); if(!years.includes(now.getFullYear()))years.push(now.getFullYear());
     const oldY=y.value,oldM=m.value;
-    y.innerHTML=years.sort((a,b)=>b-a).map(v=>`<option value="${v}">${v}</option>`).join("");
+    if(format){
+        const savedFormat=localStorage.getItem("myWorkDashboardYearFormat");
+        if(savedFormat==="BE"||savedFormat==="CE")format.value=savedFormat;
+        y.innerHTML=years.sort((a,b)=>b-a).map(v=>`<option value="${v}">${format.value==="BE"?v+543:v}</option>`).join("");
+        format.onchange=()=>{localStorage.setItem("myWorkDashboardYearFormat",format.value);populateDash();renderDash();};
+    }else{
+        y.innerHTML=years.sort((a,b)=>b-a).map(v=>`<option value="${v}">${v}</option>`).join("");
+    }
     y.value=years.includes(Number(oldY))?oldY:now.getFullYear();
     m.innerHTML=thaiMonths.map((v,i)=>`<option value="${i}">${v}</option>`).join("");
     m.value=oldM!==""?oldM:now.getMonth();
@@ -3761,7 +3843,16 @@ async function saveRoutineLogs(){
     }
     return ok;
 }
-function openRoutineLogModal(category,editId=""){const m=document.getElementById("routineLogModal"),c=routineCategories[category]||routineCategories.notes,x=editId?routineLogs.find(a=>a.id===editId):null;document.getElementById("routineCategory").value=category;document.getElementById("routineEditId").value=x?x.id:"";document.getElementById("routineModalTitle").textContent=x?"✏️ แก้ไข "+c.title:c.title;document.getElementById("routineModalSub").textContent=c.sub;document.getElementById("routineLogDate").value=x?.date||new Date().toISOString().slice(0,10);document.getElementById("routineLogTime").value=x?.time||new Date().toTimeString().slice(0,5);document.getElementById("routineLogStatus").value=x?.status||"pending";document.getElementById("routineLogDetail").value=x?.detail||x?.subject||"";m.classList.add("show");hideRoutineTimeSuggestions();hideRoutineDetailSuggestions();}
+function populatePreviousMonthTopics(){
+ const sel=document.getElementById("previousMonthTopic"), dateInput=document.getElementById("routineLogDate"); if(!sel||!dateInput)return;
+ const d=new Date((dateInput.value||new Date().toISOString().slice(0,10))+"T12:00:00");
+ const prev=new Date(d.getFullYear(),d.getMonth()-1,1), key=prev.getFullYear()+"-"+String(prev.getMonth()+1).padStart(2,"0");
+ const topics=[...new Set(routineLogs.filter(x=>String(x.date||"").slice(0,7)===key).map(x=>String(x.subject||x.detail||"").trim()).filter(Boolean))];
+ sel.innerHTML='<option value="">— เลือกหัวข้องาน —</option>'+topics.map(t=>`<option value="${escapeHtml(t).replace(/"/g,"&quot;")}">${escapeHtml(t)}</option>`).join("");
+}
+function openRoutineLogModal(category,editId=""){const m=document.getElementById("routineLogModal"),c=routineCategories[category]||routineCategories.notes,x=editId?routineLogs.find(a=>a.id===editId):null;document.getElementById("routineCategory").value=category;document.getElementById("routineEditId").value=x?x.id:"";document.getElementById("routineModalTitle").textContent=x?"✏️ แก้ไข "+c.title:c.title;document.getElementById("routineModalSub").textContent=c.sub;document.getElementById("routineLogDate").value=x?.date||new Date().toISOString().slice(0,10);document.getElementById("routineLogTime").value=x?.time||new Date().toTimeString().slice(0,5);document.getElementById("routineLogStatus").value=x?.status||"pending";document.getElementById("routineLogSubject").value=x?.subject&&x.subject!==x.detail?x.subject:(x?.subject||"");document.getElementById("routineLogDetail").value=x?.detail||"";populatePreviousMonthTopics();m.classList.add("show");hideRoutineTimeSuggestions();hideRoutineDetailSuggestions();}
+document.getElementById("previousMonthTopic")?.addEventListener("change",function(){if(this.value){document.getElementById("routineLogSubject").value=this.value;}});
+document.getElementById("routineLogDate")?.addEventListener("change",populatePreviousMonthTopics);
 function closeRoutineLogModal(){document.getElementById("routineLogModal").classList.remove("show")}
 function normalizeRoutineLogTime(value){
     let v = String(value || "").replace(/[^0-9]/g, "").slice(0, 4);
@@ -3851,6 +3942,7 @@ async function saveRoutineLog(){
         const date=document.getElementById("routineLogDate")?.value||"";
         const time=normalizeRoutineLogTime(document.getElementById("routineLogTime")?.value||"");
         const status=document.getElementById("routineLogStatus")?.value||"pending";
+        const subject=(document.getElementById("routineLogSubject")?.value||"").trim();
         const detail=(document.getElementById("routineLogDetail")?.value||"").trim();
         document.getElementById("routineLogTime").value=time;
 
@@ -3858,20 +3950,22 @@ async function saveRoutineLog(){
         const missing = [];
         if (!date) missing.push("วันที่");
         if (!time) missing.push("เวลา");
+        if (!subject) missing.push("หัวข้องาน");
         if (!detail) missing.push("รายละเอียดงาน");
         if (missing.length) {
             alert("ข้อมูลไม่ครบ\n\n❌ ยังไม่ได้กรอก: " + missing.join(", "));
             if (!date) document.getElementById("routineLogDate")?.focus();
             else if (!time) document.getElementById("routineLogTime")?.focus();
+            else if (!subject) document.getElementById("routineLogSubject")?.focus();
             else document.getElementById("routineLogDetail")?.focus();
             return false;
         }
         if(!isValidRoutineLogTime(time)){alert("ข้อมูลไม่ถูกต้อง\n\n❌ เวลาไม่ถูกต้อง\nกรุณาใช้รูปแบบ 17:00");document.getElementById("routineLogTime")?.focus();return false;}
         if(id){
             const x=routineLogs.find(a=>a.id===id);
-            if(x)Object.assign(x,{category,date,time,status,detail,subject:detail,updatedAt:Date.now()});
+            if(x)Object.assign(x,{category,date,time,status,detail,subject,updatedAt:Date.now()});
         }else{
-            routineLogs.push({id:"log_"+Date.now()+"_"+Math.random().toString(36).slice(2,8),category,date,time,status,detail,subject:detail,createdAt:Date.now()});
+            routineLogs.push({id:"log_"+Date.now()+"_"+Math.random().toString(36).slice(2,8),category,date,time,status,detail,subject,createdAt:Date.now()});
         }
         renderRoutineLogs();
         const saved=await saveRoutineLogs();
@@ -3908,7 +4002,7 @@ function updateRoutineStatusSummary(){
     const map={dashUrgent:"urgent",dashNormal:"normal",dashReceived:"received",dashProcessing:"processing",dashPending:"pending",dashDone:"done"};
     Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=counts[key]||0;});
 }
-function renderRoutineLogs(){const list=document.getElementById("routineLogList");if(!list)return;const filter=document.getElementById("routineLogFilter")?.value||"all",icons={billing:"🧾",documents:"📄",support:"🎫",dashboard:"📊",equipment:"🖨️",stock:"📦",meeting:"👥",coordination:"📞",system:"🖥️","5s":"🧹",email:"📧",notes:"📝"},statusMap={received:{text:"รับแล้ว / อยู่กับเรา",cls:"routine-status-received",icon:"📥"},processing:{text:"กำลังดำเนินการ",cls:"routine-status-processing",icon:"🔵"},urgent:{text:"ด่วน",cls:"routine-status-urgent",icon:"🔴"},normal:{text:"ไม่ด่วน",cls:"routine-status-normal",icon:"🟢"},pending:{text:"รอดำเนินการ",cls:"routine-status-pending",icon:"🟡"},done:{text:"เสร็จแล้ว",cls:"routine-status-done",icon:"✅"}};const data=routineLogs.filter(x=>filter==="all"||x.category===filter).sort((a,b)=>routineLogDateTime(b)-routineLogDateTime(a));if(!data.length){list.innerHTML='<div class="routine-empty">ยังไม่มีบันทึก<br>กดหัวข้อด้านบนเพื่อเพิ่มงาน</div>';updateRoutineStatusSummary();return}list.innerHTML=data.map(x=>{const c=routineCategories[x.category]||routineCategories.notes,d=x.date?x.date.split("-").reverse().join("/"):"-",st=statusMap[x.status]||statusMap.pending,title=x.detail||x.subject||"ไม่มีรายละเอียด";return `<div class="routine-log-item"><div class="routine-log-badge">${icons[x.category]||"📝"}</div><div class="routine-log-content"><div class="routine-log-title">${escapeHtml(title)} <span class="routine-status-badge ${st.cls}">${st.icon} ${st.text}</span></div><div class="routine-log-meta">${c.title} · 📅 ${d} · 🕐 ${x.time||"-"}</div></div><div class="routine-log-actions"><button onclick="openRoutineLogModal('${x.category}','${x.id}')">✏️</button><button class="delete-log" onclick="deleteRoutineLog('${x.id}')">🗑️</button></div></div>`}).join("");updateRoutineStatusSummary()}
+function renderRoutineLogs(){const list=document.getElementById("routineLogList");if(!list)return;const filter=document.getElementById("routineLogFilter")?.value||"all",icons={billing:"🧾",documents:"📄",support:"🎫",dashboard:"📊",equipment:"🖨️",stock:"📦",meeting:"👥",coordination:"📞",system:"🖥️","5s":"🧹",email:"📧",notes:"📝"},statusMap={received:{text:"รับแล้ว / อยู่กับเรา",cls:"routine-status-received",icon:"📥"},processing:{text:"กำลังดำเนินการ",cls:"routine-status-processing",icon:"🔵"},urgent:{text:"ด่วน",cls:"routine-status-urgent",icon:"🔴"},normal:{text:"ไม่ด่วน",cls:"routine-status-normal",icon:"🟢"},pending:{text:"รอดำเนินการ",cls:"routine-status-pending",icon:"🟡"},done:{text:"เสร็จแล้ว",cls:"routine-status-done",icon:"✅"}};const data=routineLogs.filter(x=>filter==="all"||x.category===filter).sort((a,b)=>routineLogDateTime(b)-routineLogDateTime(a));if(!data.length){list.innerHTML='<div class="routine-empty">ยังไม่มีบันทึก<br>กดหัวข้อด้านบนเพื่อเพิ่มงาน</div>';updateRoutineStatusSummary();return}list.innerHTML=data.map(x=>{const c=routineCategories[x.category]||routineCategories.notes,d=x.date?x.date.split("-").reverse().join("/"):"-",st=statusMap[x.status]||statusMap.pending,title=x.subject||x.detail||"ไม่มีหัวข้องาน",detailText=x.detail&&x.subject&&x.detail!==x.subject?x.detail:"";return `<div class="routine-log-item"><div class="routine-log-badge">${icons[x.category]||"📝"}</div><div class="routine-log-content"><div class="routine-log-title">${escapeHtml(title)} <span class="routine-status-badge ${st.cls}">${st.icon} ${st.text}</span></div>${detailText?`<div class="routine-log-detail">${escapeHtml(detailText)}</div>`:""}<div class="routine-log-meta">${c.title} · 📅 ${d} · 🕐 ${x.time||"-"}</div></div><div class="routine-log-actions"><button onclick="openRoutineLogModal('${x.category}','${x.id}')">✏️</button><button class="delete-log" onclick="deleteRoutineLog('${x.id}')">🗑️</button></div></div>`}).join("");updateRoutineStatusSummary()}
 function setupRoutineWorkLog(){
     document.querySelectorAll(".routine-card").forEach(x=>x.addEventListener("click",()=>openRoutineLogModal(x.dataset.routine)));
     document.getElementById("routineModalClose")?.addEventListener("click",closeRoutineLogModal);
@@ -4226,6 +4320,94 @@ document.addEventListener("DOMContentLoaded",function(){
     if(typeof populateDash==="function")populateDash();
     setupAnnualPlannerSafe();
     if(typeof renderDash==="function")renderDash();
+});
+
+
+/* ================= BUSY MODE + WORK PROCEDURES ================= */
+function addDashboardQuickTask(){
+ const name=(document.getElementById('homeQuickName').value||'').trim();
+ const deadline=(document.getElementById('homeQuickDeadline').value||'').trim();
+ if(!name){alert('พิมพ์ชื่องานก่อนนะ');document.getElementById('homeQuickName').focus();return;}
+ tasks.push({id:Date.now()+Math.floor(Math.random()*1000000),name,detail:'',deadline,priority:'normal',status:'pending',createdAt:new Date().toISOString()});
+ saveLocalData();renderTasks();renderMonthSummary();updateSummary();refreshSecondaryViews();renderBusyTasks();
+ if(firebaseReady&&currentUser)saveData();
+ document.getElementById('homeQuickName').value='';document.getElementById('homeQuickDeadline').value='';document.getElementById('homeQuickName').focus();
+}
+function renderHomePanel(){
+ const stats=document.getElementById('homeWorkStats'),listEl=document.getElementById('homePriorityList');if(!stats||!listEl)return;
+ const open=tasks.filter(t=>t.status!=='done');
+ const overdue=open.filter(t=>{const d=typeof taskDeadlineDate==='function'?taskDeadlineDate(t):null;return d&&d.getTime()<new Date().setHours(0,0,0,0)});
+ const urgent=open.filter(t=>String(t.priority||'').toLowerCase()==='urgent'||String(t.priority||'').toLowerCase()==='high');
+ const waiting=open.filter(t=>/wait|รอ/i.test(String(t.status||'')+' '+String(t.detail||'')));
+ const done=tasks.filter(t=>t.status==='done');
+ const cards=[['📌 ยังไม่เสร็จ',open.length],['🔴 ด่วน',urgent.length],['⏰ เลยกำหนด',overdue.length],['⏳ รอติดตาม',waiting.length],['✅ เสร็จแล้ว',done.length]];
+ stats.innerHTML=cards.map(([label,n])=>`<div style="background:#f8f7fc;border-radius:13px;padding:13px"><div style="font-size:12px;color:#777187">${label}</div><strong style="font-size:25px;color:#30264b">${n}</strong></div>`).join('');
+ const focus=[...overdue,...urgent.filter(t=>!overdue.includes(t)),...open.filter(t=>!overdue.includes(t)&&!urgent.includes(t))].slice(0,7);
+ listEl.innerHTML=focus.length?focus.map(t=>`<div style="display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #f0edf5"><div style="flex:1;min-width:0"><strong>${safeText(t.name||t.title||'งาน')}</strong><div style="font-size:12px;color:#858397;margin-top:4px">${t.deadline?'กำหนดส่ง: '+safeText(t.deadline):'ยังไม่กำหนดส่ง'}</div></div><button type="button" onclick="toggleStatus(${Number(t.id)})" style="border:0;border-radius:9px;background:#e9f7ef;color:#207344;padding:8px 11px;cursor:pointer">✓ เสร็จ</button></div>`).join(''):'<p style="color:#858397">ยังไม่มีงานค้าง 🎉</p>';
+}
+
+function addBusyTasks(){
+ const input=document.getElementById('busyQuickInput');
+ const lines=(input.value||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ if(!lines.length){alert('พิมพ์ชื่องานอย่างน้อย 1 รายการก่อนนะ');return;}
+ lines.forEach(line=>{const parts=line.split('|');const name=(parts.shift()||'').trim();const deadline=parts.join('|').trim();if(!name)return;
+  tasks.push({id:Date.now()+Math.floor(Math.random()*1000000),name,detail:'',deadline,priority:'normal',status:'pending',createdAt:new Date().toISOString()});
+ });
+ saveLocalData(); renderTasks(); renderMonthSummary(); updateSummary(); refreshSecondaryViews(); renderBusyTasks();
+ if(firebaseReady&&currentUser)saveData();
+ input.value=''; alert('เพิ่มงานลงในรายการแล้ว');
+}
+function renderBusyTasks(){
+ const el=document.getElementById('busyTaskList');if(!el)return;
+ const pending=tasks.filter(t=>t.status!=='done').sort((a,b)=>{const da=typeof taskDeadlineDate==='function'?taskDeadlineDate(a):null;const dbb=typeof taskDeadlineDate==='function'?taskDeadlineDate(b):null;return (da?da.getTime():Infinity)-(dbb?dbb.getTime():Infinity)});
+ renderHomePanel();
+ el.innerHTML=pending.length?pending.map(t=>`<div style="display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #f0edf5"><div style="flex:1"><strong>${safeText(t.name||t.title||'งาน')}</strong><div style="font-size:12px;color:#858397;margin-top:4px">${t.deadline?'กำหนดส่ง: '+safeText(t.deadline):'ยังไม่กำหนดส่ง'}${t.detail?' · '+safeText(t.detail):''}</div></div><button type="button" onclick="toggleStatus(${Number(t.id)})" style="border:0;border-radius:9px;background:#e9f7ef;color:#207344;padding:8px 12px;cursor:pointer">✓ เสร็จ</button></div>`).join(''):'<p style="color:#858397;padding:12px 0">ไม่มีงานค้างอยู่ 🎉</p>';
+}
+let workProcedures=[];
+try{const stored=JSON.parse(localStorage.getItem('myWorkProcedures')||'[]');if(Array.isArray(stored))workProcedures=stored;}catch(e){console.warn('อ่านคู่มือไม่สำเร็จ',e)}
+function clearProcedureForm(){['procedureTitle','procedureCategory','procedureSteps','procedureNotes','procedureEditId'].forEach(id=>document.getElementById(id).value='');}
+function saveProcedure(){
+ const title=document.getElementById('procedureTitle').value.trim();if(!title){alert('กรุณากรอกชื่องาน');return;}
+ const id=document.getElementById('procedureEditId').value;
+ const item={id:id||String(Date.now()),title,category:document.getElementById('procedureCategory').value.trim(),steps:document.getElementById('procedureSteps').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),notes:document.getElementById('procedureNotes').value.trim(),updatedAt:new Date().toISOString()};
+ if(id){const i=workProcedures.findIndex(x=>String(x.id)===id);if(i>=0)workProcedures[i]=item;else workProcedures.push(item);}else workProcedures.unshift(item);
+ localStorage.setItem('myWorkProcedures',JSON.stringify(workProcedures));clearProcedureForm();renderProcedures();alert('บันทึกคู่มือแล้ว');
+}
+function editProcedure(id){const p=workProcedures.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('procedureTitle').value=p.title||'';document.getElementById('procedureCategory').value=p.category||'';document.getElementById('procedureSteps').value=(p.steps||[]).join('\n');document.getElementById('procedureNotes').value=p.notes||'';document.getElementById('procedureEditId').value=p.id;document.getElementById('procedureTitle').focus();}
+function deleteProcedure(id){if(!confirm('ต้องการลบคู่มือนี้หรือไม่?'))return;workProcedures=workProcedures.filter(x=>String(x.id)!==String(id));localStorage.setItem('myWorkProcedures',JSON.stringify(workProcedures));renderProcedures();}
+function renderProcedures(){const el=document.getElementById('procedureList');if(!el)return;const q=(document.getElementById('procedureSearch').value||'').toLowerCase();const list=workProcedures.filter(p=>(p.title+' '+(p.category||'')+' '+(p.notes||'')+' '+(p.steps||[]).join(' ')).toLowerCase().includes(q));
+ el.innerHTML=list.length?list.map(p=>`<article style="background:#fff;border:1px solid #eeeaf9;border-radius:16px;padding:18px;margin-bottom:12px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1"><h3>${safeText(p.title)}</h3><p style="color:#7e7891;font-size:12px;margin:4px 0 10px">${safeText(p.category||'ไม่ระบุหมวดหมู่')}</p></div><button onclick="editProcedure('${String(p.id).replace(/'/g,'\\\'')}')" style="border:0;border-radius:8px;padding:7px 10px;cursor:pointer">✏️ แก้ไข</button><button onclick="deleteProcedure('${String(p.id).replace(/'/g,'\\\'')}')" style="border:0;border-radius:8px;padding:7px 10px;cursor:pointer">🗑️</button></div><ol style="padding-left:22px;line-height:1.8">${(p.steps||[]).map(x=>'<li>'+safeText(x)+'</li>').join('')||'<li style="color:#999">ยังไม่ได้บันทึกขั้นตอน</li>'}</ol>${p.notes?'<p style="white-space:pre-wrap;background:#f8f7fc;border-radius:9px;padding:10px;margin-top:12px">'+safeText(p.notes)+'</p>':''}</article>`).join(''):'<div style="background:#fff;padding:22px;border-radius:14px;color:#858397">ยังไม่มีคู่มือ ลองเพิ่มคู่มือแรกของเธอได้เลย</div>';
+}
+document.addEventListener('DOMContentLoaded',()=>{renderBusyTasks();renderHomePanel();renderProcedures();});
+
+
+/* User-added routine categories are stored separately to protect existing Firestore records. */
+const CUSTOM_ROUTINE_KEY = "myWorkCustomRoutineCategories_v1";
+function readCustomRoutineCategories(){try{return JSON.parse(localStorage.getItem(CUSTOM_ROUTINE_KEY)||"[]")}catch(e){return []}}
+function renderCustomRoutineCategories(){
+ const grid=document.getElementById("routineCategoryGrid"); if(!grid)return;
+ grid.querySelectorAll("[data-custom-routine='1']").forEach(el=>el.remove());
+ readCustomRoutineCategories().forEach(item=>{
+  if(!item||!item.id||!item.name)return;
+  routineCategories[item.id]={title:(item.icon||"📌")+" "+item.name,sub:"บันทึกงาน: "+item.name,placeholder:"รายละเอียดงาน "+item.name};
+  const btn=document.createElement("button");btn.className="routine-card";btn.dataset.routine=item.id;btn.dataset.customRoutine="1";
+  btn.innerHTML='<div class="routine-icon">'+escapeHtml(item.icon||"📌")+'</div><div class="routine-info"><h3>'+escapeHtml(item.name)+'</h3><p>บันทึกและติดตาม'+escapeHtml(item.name)+'</p></div><span class="routine-add">＋</span>';
+  btn.addEventListener("click",()=>openRoutineLogModal(item.id));grid.appendChild(btn);
+ });
+ const count=document.getElementById("routineCategoryCount");if(count)count.textContent=grid.querySelectorAll(".routine-card").length+" หมวดงาน";
+}
+function addCustomRoutineCategory(){
+ const input=document.getElementById("customRoutineName"), iconInput=document.getElementById("customRoutineIcon");
+ const name=(input?.value||"").trim(),icon=(iconInput?.value||"📌").trim()||"📌";
+ if(!name){alert("กรุณากรอกชื่อหัวข้องาน");input?.focus();return;}
+ const items=readCustomRoutineCategories();if(items.some(x=>x.name.toLowerCase()===name.toLowerCase())||Object.values(routineCategories).some(x=>x.title.replace(/^\S+\s*/,"").toLowerCase()===name.toLowerCase())){alert("มีหัวข้อนี้อยู่แล้ว");return;}
+ const id="custom_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7);
+ items.push({id,name,icon});localStorage.setItem(CUSTOM_ROUTINE_KEY,JSON.stringify(items));input.value="";iconInput.value="";renderCustomRoutineCategories();
+}
+document.addEventListener("DOMContentLoaded",()=>{
+ renderCustomRoutineCategories();
+ const now=new Date(),be=now.getFullYear()+543,el=document.getElementById("todayBuddhistYear");
+ if(el)el.textContent="พ.ศ. "+be;
 });
 
 </script>
