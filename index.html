@@ -4452,8 +4452,81 @@ function wcGetInstances(){
  wcRules.forEach(r=>{if(!r||r.active===false)return;for(let y=from.getFullYear(),m=from.getMonth();y<=to.getFullYear()&&(y<to.getFullYear()||m<=to.getMonth());){const first=new Date(y,m,1);let day=r.day==='last'?new Date(y,m+1,0).getDate():Math.min(Number(r.day)||1,new Date(y,m+1,0).getDate());const d=new Date(y,m,day);const key=wcDateKey(d);if(key>=String(r.start||'0000-00-00')&&!wcSkips[key+'_'+r.id]){const state=wcStates[key+'_'+r.id]||{};let shown=d;let carried=false;if(!state.done&&d<now){shown=now;carried=true;}if(shown.getFullYear()===from.getFullYear()&&shown.getMonth()===from.getMonth())out.push({key:'rule_'+r.id+'_'+key,date:wcDateKey(shown),originalDate:key,name:r.name,detail:'งานประจำ',status:state.done?'done':'pending',kind:'routine',ruleId:r.id,procedureId:r.procedureId||'',carried});}m++;if(m>11){m=0;y++;}}
  });return out;
 }
-function wcRender(){const days=document.getElementById('wcDays');if(!days)return;const y=wcView.getFullYear(),m=wcView.getMonth();document.getElementById('wcMonthLabel').textContent=thaiMonths[m]+' '+(y+543);const first=new Date(y,m,1),offset=first.getDay(),count=new Date(y,m+1,0).getDate();const prevCount=new Date(y,m,0).getDate();const items=wcGetInstances();const byDate={};items.forEach(x=>(byDate[x.date]||(byDate[x.date]=[])).push(x));let html='';for(let i=0;i<42;i++){let day,dt,muted=false;if(i<offset){day=prevCount-offset+i+1;dt=new Date(y,m-1,day);muted=true;}else if(i>=offset+count){day=i-offset-count+1;dt=new Date(y,m+1,day);muted=true;}else{day=i-offset+1;dt=new Date(y,m,day);}const key=wcDateKey(dt),list=byDate[key]||[];const dots=list.slice(0,4).map(x=>'<i class="'+(x.kind==='routine'?'amber':x.status==='done'?'green':'purple')+'"></i>').join('');html+='<button type="button" class="wc-day '+(muted?'muted ':'')+(key===wcSelected?'selected ':'')+(key===wcDateKey(new Date())?'today':'')+'" onclick="wcSelectDate(\''+key+'\')"><span class="wc-day-num">'+day+'</span><span class="wc-day-dots">'+dots+'</span></button>';}
- days.innerHTML=html;const monthItems=items;const totalEl=document.getElementById('wcMonthTotal');if(totalEl)totalEl.textContent=monthItems.length;const doneEl=document.getElementById('wcMonthDone');if(doneEl)doneEl.textContent=monthItems.filter(x=>x.status==='done').length;const pendingEl=document.getElementById('wcMonthPending');if(pendingEl)pendingEl.textContent=monthItems.filter(x=>x.status!=='done').length;wcRenderSelected(items);wcRenderRules();}
+function wcRender() {
+    const daysEl = document.getElementById('wcDays');
+    if (!daysEl) return;
+
+    const y = wcView.getFullYear();
+    const m = wcView.getMonth();
+    const monthLabel = document.getElementById('wcMonthLabel');
+    if (monthLabel) {
+        monthLabel.textContent = thaiMonths[m] + ' ' + (y + 543);
+    }
+
+    // Always create exactly 42 cells. Construct each date directly from
+    // the first day of the visible month so no calendar date can be skipped.
+    const firstDayOffset = new Date(y, m, 1).getDay();
+    const todayKey = wcDateKey(new Date());
+    const items = wcGetInstances();
+    const byDate = Object.create(null);
+
+    items.forEach(item => {
+        if (!byDate[item.date]) byDate[item.date] = [];
+        byDate[item.date].push(item);
+    });
+
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+        const date = new Date(y, m, 1 - firstDayOffset + i);
+        const key = wcDateKey(date);
+        const dayNumber = date.getDate();
+        const isMuted = date.getMonth() !== m;
+        const isSelected = key === wcSelected;
+        const isToday = key === todayKey;
+        const dayItems = byDate[key] || [];
+
+        const dots = dayItems.slice(0, 4).map(item => {
+            const color = item.kind === 'routine'
+                ? 'amber'
+                : item.status === 'done' ? 'green' : 'purple';
+            return '<i class="' + color + '"></i>';
+        }).join('');
+
+        const classes = [
+            'wc-day',
+            isMuted ? 'muted' : '',
+            isSelected ? 'selected' : '',
+            isToday ? 'today' : ''
+        ].filter(Boolean).join(' ');
+
+        cells.push(
+            '<button type="button" class="' + classes +
+            '" data-calendar-date="' + key +
+            '" aria-label="' + key +
+            '" onclick="wcSelectDate(\'' + key + '\')">' +
+            '<span class="wc-day-num">' + dayNumber + '</span>' +
+            '<span class="wc-day-dots">' + dots + '</span>' +
+            '</button>'
+        );
+    }
+
+    daysEl.innerHTML = cells.join('');
+
+    const totalEl = document.getElementById('wcMonthTotal');
+    const doneEl = document.getElementById('wcMonthDone');
+    const pendingEl = document.getElementById('wcMonthPending');
+
+    if (totalEl) totalEl.textContent = items.length;
+    if (doneEl) {
+        doneEl.textContent = items.filter(item => item.status === 'done').length;
+    }
+    if (pendingEl) {
+        pendingEl.textContent = items.filter(item => item.status !== 'done').length;
+    }
+
+    wcRenderSelected(items);
+    wcRenderRules();
+}
 function wcRenderSelected(items){const el=document.getElementById('wcSelectedTasks');if(!el)return;const d=wcParseKey(wcSelected);document.getElementById('wcSelectedLabel').textContent=wcFormatThai(d);const list=items.filter(x=>x.date===wcSelected);el.innerHTML=list.length?list.map(x=>'<article class=\"wc-task '+(x.status==='done'?'done':'')+'\"><div class=\"wc-task-main\"><strong>'+escapeHtml(x.name)+'</strong><small>'+(x.kind==='routine'?'🔁 งานประจำ':'📌 งานทั่วไป')+(x.carried?' · ย้ายมาแสดงวันนี้ (กำหนดเดิม '+x.originalDate+')':'')+(x.detail?' · '+escapeHtml(x.detail):'')+'</small></div><div class=\"wc-task-actions\">'+(x.procedureId?'<button type=\"button\" class=\"skip\" onclick=\"wcOpenProcedure(\''+x.procedureId+'\')\">📖 คู่มือ</button>':'')+'<button type=\"button\" onclick=\"wcToggle(\''+x.key+'\')\">'+(x.status==='done'?'↶ ยกเลิก':'✓ เสร็จ')+'</button>'+(x.kind==='routine'?'<button class=\"skip\" type=\"button\" onclick=\"wcSkip(\''+x.ruleId+'\',\''+x.originalDate+'\')\">ข้ามรอบนี้</button>':'')+'</div></article>').join(''):'<div class=\"wc-empty\">วันนี้ยังไม่มีงาน ✨</div>';}
 
 function wcRenderRules(){const el=document.getElementById('wcRulesList');if(!el)return;el.innerHTML=wcRules.length?wcRules.map(r=>'<div class="wc-rule"><div><strong>'+escapeHtml(r.name)+'</strong><small>ทำซ้ำทุกเดือน · '+(r.day==='last'?'วันสุดท้ายของเดือน':'วันที่ '+r.day)+' · เริ่ม '+r.start+'</small></div><button type="button" onclick="wcToggleRule(\''+r.id+'\')">'+(r.active===false?'เปิดใช้งาน':'พักงาน')+'</button><button type="button" onclick="wcDeleteRule(\''+r.id+'\')">ลบ</button></div>').join(''):'<div class="wc-empty">ยังไม่มีงานประจำ กด “เพิ่มงานประจำ” เพื่อสร้างกฎแรก</div>';}
